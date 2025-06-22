@@ -1,0 +1,643 @@
+ <!DOCTYPE html>  
+<html lang="en">  
+<head>  
+  <meta charset="UTF-8">  
+  <title>₦10 Display</title>  
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@700&display=swap" rel="stylesheet">  
+  <style>  
+    body {  
+      background-color: #000;  
+      color: white;  
+      font-family: Arial, sans-serif;  
+      text-align: center;  
+      margin: 0;  
+  width: 100%;  
+       -webkit-user-select: none; /* Safari */
+    -moz-user-select: none;    /* Firefox */
+    -ms-user-select: none;     /* IE10+/Edge */
+    user-select: none;         /* Standard */
+    }  
+   canvas {  
+            display: block;  
+            width: 100%;  
+            height: auto;  
+    
+           
+        }  
+  .scroll-container5 {  
+    margin-top: -41%;  
+      display: flex;  
+      overflow-x: auto;  
+      gap: 12px;  
+      margin-bottom: 20px;  
+  scroll-behavior: smooth; /* Smooth scroll behavior */  
+    -webkit-overflow-scrolling: touch; /* For smooth scrolling on iOS */  
+  padding: 0 px 44px;  
+    
+   
+    }  
+  
+    .item5 {  
+      position: relative;  
+      flex: 0 0 auto;  
+      width: 61px;  
+      height: 61px;  
+      border-radius: 12px;  
+      overflow: hidden;  
+      box-sizing: border-box;  
+      border: 1.6px solid transparent;  
+        
+    }  
+  
+    .item5 img {  
+      width: 100%;  
+      height: 100%;  
+      object-fit: cover;  
+      
+    }  
+  
+    .item5.selected {  
+      border-color: #6b2cff; /* Purple border */  
+    }  
+  
+    .tick5 {  
+      position: absolute;  
+      top: 0;  
+      right: 0;  
+      background: #6b2cff;  
+      width: 19px;  
+      height: 19px;  
+      border-bottom-left-radius: 11px;  
+      display: none;  
+      align-items: center;  
+      justify-content: center;  
+    }  
+  
+    .tick5 svg {  
+      width: 12px;  
+      height: 12px;  
+      color: white;  
+    }  
+  
+    .item5.selected .tick5 {  
+      display: flex;  
+    }  
+  
+    #textContainer {  
+      font-size: 16px;  
+      color: #ccc;  
+    }  
+  </style>  
+</head>  
+<body>  
+  <div style="width: 100.5%; height: 100%;  ">  
+    <div style ="display: flex;">  
+      <img style=" width: 100%; height: auto; "src="https://res.cloudinary.com/dwbylknew/image/upload/v1750552177/uploads/snfuhnog8zyrbuqetpwu.jpg" alt="">  
+      
+    <canvas style="position: absolute; top: 8%; left: 0; display: block;" id="canvas"></canvas>  
+  <div >
+     <img crossOrigin="anonymous" id="whopls" style="width: 96.5%; height: auto; position: absolute; left: 2%; top: 10%; border-radius: 37px; display: none;" src="" alt="">
+     
+     <canvas style="position: absolute; top:  8%; left: 0; display: none;" id="canvas2"></canvas>  
+    
+      </div>
+    </div>  
+</div>  
+  
+<div class="scroll-container5" id="imageScroll">  
+  <div class="item5 selected" id="item1" onclick="selectItem1(this)">  
+    <div class="tick5">  
+      <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">  
+        <polyline points="20 6 9 17 4 12" />  
+      </svg>  
+    </div>  
+    <img src="https://res.cloudinary.com/dwbylknew/image/upload/v1747191429/uploads/wzs6q7gfii3sjf1rvrok.png" alt="Receipt" />  
+  </div>  
+  <div class="item5" id="item2" onclick="selectItem2(this)">  
+    <div class="tick5">  
+      <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">  
+        <polyline points="20 6 9 17 4 12" />  
+      </svg>  
+    </div>  
+    <img src="https://res.cloudinary.com/dwbylknew/image/upload/v1747191472/uploads/esgj1ye9kjiu6s7mr3bt.png" alt="Wishes" />  
+  </div>  
+  <div class="item5" id="item3" onclick="selectItem3(this)">  
+    <div class="tick5">  
+      <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">  
+        <polyline points="20 6 9 17 4 12" />  
+      </svg>  
+    </div>  
+    <img src="https://res.cloudinary.com/dwbylknew/image/upload/v1747191510/uploads/radadirz5ga6g6k72dwp.png" alt="Birthday" />  
+  </div>  
+  <div class="item5" id="item4" onclick="selectItem4(this)">  
+    <div class="tick5">  
+      <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">  
+        <polyline points="20 6 9 17 4 12" />  
+      </svg>  
+    </div>  
+    <img src="https://res.cloudinary.com/dwbylknew/image/upload/v1747191543/uploads/za0d6oevcdjezxlg14hg.png" alt="Valentine" />  
+  </div>  
+  <div class="item5" id="item5" onclick="selectItem5(this)">  
+    <div class="tick5">  
+      <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">  
+        <polyline points="20 6 9 17 4 12" />  
+      </svg>  
+    </div>  
+    <img src="https://res.cloudinary.com/dwbylknew/image/upload/v1747191581/uploads/v4nhktzn6zprvsztqli1.png" alt="Wedding" />  
+  </div>  
+  <div class="item5" id="item6" onclick="selectItem6(this)">  
+    <div class="tick5">  
+      <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">  
+        <polyline points="20 6 9 17 4 12" />  
+      </svg>  
+    </div>  
+    <img src="https://res.cloudinary.com/dwbylknew/image/upload/v1747191623/uploads/dnxrvpy2uxj9org6gnqy.png" alt="Gift" />  
+  </div>  
+</div>  
+  
+
+  
+<div style="opacity: 0;"id="checkme">Palhmpay</div>  
+<div id="radio" style="width: 30px; height: 20px; background-color: transparent;"></div>  
+ <div onclick="closeIframe()"id="closerec" style="width: 13%; height: 6%; background-color: transparent ; position: absolute; top: 0; left: 0;"></div>  
+  <div id="down1"onclick="downloadImage()" style="width: 93%; height: 6%; background-color: transparent; position: absolute; bottom: -4%; display: block;"></div>  
+  <div id="down2" onclick="downloadImage2()" style="width: 93%; height: 6%; background-color: transparent; position: absolute; bottom: -4%; display: none;"></div>  
+  
+  
+</div>  
+<script>  
+function closeIframe() {
+      const edit = 
+   localStorage.getItem("mark") || "";    
+            
+            
+      if (edit.trim().toLowerCase() === "yes") {  
+      parent.postMessage("hideIframe", "*");
+ 
+ localStorage.setItem('activeContainer', "successP");
+  } else {
+     parent.postMessage("hideIframe2", "*");
+ 
+ localStorage.setItem('activeContainer', "resdes"); 
+
+  }
+  
+    }
+
+ // Listen for messages from the iframe
+    window.addEventListener("message", function(event) {
+      if (event.data === "reload") {
+  window.location.reload();
+     
+      }
+    });
+
+let currentTemplate2 ="";
+let currentTemplate3 ="";
+currentTemplate = "";
+const items5 = document.querySelectorAll('.item5');  
+  
+  function selectItem(element, message) {  
+    items5.forEach(el => el.classList.remove('selected'));  
+    element.classList.add('selected');  
+    document.getElementById('textContainer').innerText = message;  
+  }  
+  
+let canvas = document.getElementById('canvas');  
+        let ctx = canvas.getContext('2d');  
+        let img = new Image();  
+        let overlayImg = new Image(); // Overlay image (bank logo)  
+  
+        img.onload = function() {  
+            canvas.width = img.width;  
+            canvas.height = img.height;  
+updateCanvas();  
+ };  
+  
+        img.src = "https://res.cloudinary.com/dwbylknew/image/upload/v1750552273/uploads/woxcuahoxwhywwkefcw6.jpg"; // Load base image  
+  
+ // Load text from localStorage  
+            let text2 = localStorage.getItem("setAmount") || "";  
+            let text3 = localStorage.getItem("accountHolderName") || "";  
+            let text4 = localStorage.getItem("selectedBankName") || "";  
+            let text5 = localStorage.getItem("accountNumber") || "";  
+            let text6 = localStorage.getItem("randomNumber") || "";  
+         const dog1 = 
+localStorage.getItem("sectionno") || "";      
+          
+           let text7 = dog1  
+           let join2 = `${text4} | ${text5}`
+           
+            let currentTime = localStorage.getItem("formattedTime2") || "";         
+  
+        
+       document.getElementById("radio").addEventListener('click', () => {  
+ const bus ="life around me"  
+ text2 = bus;  
+ updateCanvas();  
+  });  
+        function updateCanvas() {  
+            ctx.clearRect(0, 0, canvas.width, canvas.height);  
+            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);  
+  
+            // Draw overlay image  
+            let overlayWidth = canvas.width * 0.135;  
+            let overlayHeight = overlayImg.height * (overlayWidth / overlayImg.width);  
+            let overlayX = canvas.width * 0.80;  
+            let overlayY = canvas.height * 0.283;  
+            ctx.drawImage(overlayImg, overlayX, overlayY, overlayWidth, overlayHeight);  
+  
+             
+       const checkMe = 
+   localStorage.getItem("amen") || "";    
+            
+            
+      if (checkMe.trim().toLowerCase() === "palmpay") {  
+        img.src = "https://res.cloudinary.com/dwbylknew/image/upload/v1750552329/uploads/kz1ywb8kqzihwsyonivn.jpg";  
+          // Set font and draw text  
+            ctx.textAlign = "center";  
+            ctx.font = "32.3px Arial";  
+            ctx.fillStyle = "#b0b3b8";  
+            ctx.fillText(currentTime, canvas.width / 2, canvas.height * 0.265);   
+ ctx.fillStyle = "#8B5CF6";   
+       ctx.font = "bold 76px Arial";   
+            if (text2) ctx.fillText(text2, canvas.width / 2, canvas.height * 0.178);  
+          ctx.textAlign = "right";  
+            ctx.fillStyle = "white";  
+             
+            ctx.font = "500 37px Arial";  
+            if (text3) ctx.fillText(text3, canvas.width - 97, canvas.height * 0.366);        
+      
+    ctx.textAlign = "right";  
+     ctx.fillStyle = "#b0b3b8";        
+            ctx.font = "35.7px Arial";  
+            if (join2) ctx.fillText(join2, canvas.width - 97, canvas.height * 0.417);  
+       
+      
+    ctx.textAlign = "right";  
+         ctx.fillStyle = "white";  
+            if (text6) ctx.fillText(text6, canvas.width - 97, canvas.height * 0.795);  
+       
+      } else {  
+       img.src = "https://res.cloudinary.com/dwbylknew/image/upload/v1750552273/uploads/woxcuahoxwhywwkefcw6.jpg";    
+            // Set font and draw text  
+            ctx.textAlign = "center";  
+            ctx.font = "22.3px Arial";  
+            ctx.fillStyle = "#b0b3b8";  
+            ctx.fillText(currentTime, canvas.width / 2, canvas.height * 0.255);   
+ ctx.fillStyle = "#8B5CF6";  
+           
+          ctx.font = "bold 54px Arial";   
+            if (text2) ctx.fillText(text2, canvas.width / 2, canvas.height * 0.173);  
+               
+       ctx.textAlign = "right";  
+            ctx.fillStyle = "white";  
+             
+            ctx.font = "500 23px Arial";  
+            if (text3) ctx.fillText(text3, canvas.width - 62, canvas.height * 0.35);  
+      
+    ctx.textAlign = "right";  
+     ctx.fillStyle = "#b0b3b8";        
+            ctx.font = "23.7px Arial";  
+            if (join2) ctx.fillText(join2, canvas.width - 62, canvas.height * 0.4);  
+      
+     ctx.textAlign = "right";  
+         ctx.fillStyle = "white";  
+            if (text6) ctx.fillText(text6, canvas.width - 62, canvas.height * 0.757);  
+     if (text7) ctx.fillText(text7, canvas.width - 62, canvas.height * 0.807);  
+      }  
+      
+    
+     }  
+  
+        function getCurrentTime() {  
+    let now = new Date();  
+    let months = [  
+        "Jan", "Feb", "Mar", "Apr", "May", "Jun",  
+        "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"  
+    ];  
+    let month = months[now.getMonth()];  
+    let day = now.getDate();  
+    let year = now.getFullYear();  
+    let hours = now.getHours();  
+    let minutes = now.getMinutes().toString().padStart(2, "0");  
+    let seconds = now.getSeconds().toString().padStart(2, "0");  
+    let ampm = hours >= 12 ? "PM" : "AM";  
+    return `${month} ${day}, ${year} ${hours}:${minutes}:${seconds} ${ampm}`;  
+}  
+        function downloadImage() {  
+            let link = document.createElement('a');  
+            link.download = "PalmPay.png";  
+            link.href = canvas.toDataURL("image/png");  
+            link.click();  
+        }  
+   let img2 = new Image();
+img2.crossOrigin = "anonymous";  // <-- Allow CORS
+let overlayImg2 = new Image();
+overlayImg2.crossOrigin = "anonymous"; // <-- Also needed
+  overlayImg2.src = "";
+
+function updateCanvas2() {  
+    let canvas2 = document.getElementById('canvas2');  
+        let ctx2 = canvas2.getContext('2d');  
+        let img2 = new Image();  
+        // Overlay image (bank logo)  
+  
+        img2.onload = function() {  
+            canvas2.width = img2.width;  
+            canvas2.height = img2.height;  
+updateCanvas2();  
+ };  
+img2.src = "https://res.cloudinary.com/dwbylknew/image/upload/v1747190483/uploads/afgh4nsgh2nkzmt7wtsu.jpg"; 
+
+     ctx2.globalAlpha = 0; // Make image fully transparent
+ctx2.drawImage(img2, 0, 0, canvas2.width, canvas2.height);
+ctx2.globalAlpha = 1; // Reset alpha for text and other drawings        
+           
+            ctx2.clearRect(0, 0, canvas2.width, canvas2.height);  
+           
+            // Draw overlay image  
+            let overlayWidth2 = canvas2.width * 0.135;  
+            let overlayHeight2 = overlayImg2.height * (overlayWidth2 / overlayImg2.width);  
+            let overlay2X = canvas2.width * 0.80;  
+            let overlay2Y = canvas2.height * 0.283;  
+            ctx2.drawImage(overlayImg2, overlay2X, overlay2Y, overlayWidth2, overlayHeight2);  
+ let road1 = text2;  
+  let tet2 = `${text2}`  
+  let tet3 ="TUAKA NWINEEWII send you";  
+  let tet4 ="Recipient Account:"  
+  let tet45 = `${text4} | ${text5}`  
+  let tet6 = `Dear ${text3}`  
+  let tet7 = "Wishing you happiness, success,";  
+     
+   let tet8 = "and love."  
+  let tet9 = "TUAKA NWINEEWII(916***6696)"  
+   let bet1 = currentTime;  
+   let bet2 = `Transation ID: ${text6}`;  
+    
+   // Set font and draw text  
+            ctx2.textAlign = "center";  
+              
+          ctx2.fillStyle = currentTemplate === "birthday" ? "black" : "white";  
+   
+      ctx2.font = "500 28.3px Arial";  
+            if (tet3) ctx2.fillText(tet3, canvas2.width / 2, canvas2.height * 0.16);     
+     if (currentTemplate2 === "graduation") {  
+         ctx2.fillStyle ="black";  
+       } else {  
+        if (currentTemplate2 === "birthday") {  
+         ctx2.fillStyle ="#4e2a00";  
+       } else {  
+          if (currentTemplate2 === "wedding") {  
+         ctx2.fillStyle ="#001d6fa5";  
+       } else {  
+          if (currentTemplate2 === "wishes") {  
+         ctx2.fillStyle ="white";  
+            
+       }  
+      }  
+       }  
+        
+       }  
+           
+          ctx2.font = "bold 70px Arial";   
+            if (tet2) ctx2.fillText(tet2, canvas2.width / 2, canvas2.height * 0.26);  
+       ctx2.fillStyle = currentTemplate === "birthday" ? "black" : "white";  
+        ctx2.font = "500 25.7px Arial";  
+            if (tet4) ctx2.fillText(tet4, canvas2.width / 2, canvas2.height * 0.318);   
+     ctx2.font = "405 25.7px Arial";  
+            if (tet45) ctx2.fillText(tet45, canvas2.width / 2, canvas2.height * 0.354);     
+        ctx2.fillStyle = "white";  
+     ctx2.font = "600 28.7px Arial";  
+            if (tet6) ctx2.fillText(tet6, canvas2.width * 0.445, canvas2.height * 0.646);    
+     ctx2.font = "405 28.7px Arial";  
+       
+         if (currentTemplate3 === "bwish" ) {
+         let bwish ="Happy birthday! May your day be"
+         let bwish2 ="filled with everything you love."
+      ctx2.textAlign = "left";
+       if (bwish) ctx2.fillText(bwish, canvas2.width * 0.2, canvas2.height * 0.696);          
+    ctx2.textAlign = "left";
+    if (bwish2) ctx2.fillText(bwish2, canvas2.width * 0.12, canvas2.height * 0.75);               
+        
+         } else {
+          if (currentTemplate3 === "vtine" ) {
+         let vtine ="Every love story is wonderful but"
+         let vtine2 ="ours is my favorite."
+     ctx2.textAlign = "left";
+       if (vtine) ctx2.fillText(vtine, canvas2.width * 0.19, canvas2.height * 0.696);          
+ ctx2.textAlign = "left";
+    if (vtine2) ctx2.fillText(vtine2, canvas2.width * 0.13, canvas2.height * 0.75);               
+        
+         } else {
+             
+             if (currentTemplate3 === "wishes" ) {
+         let wish ="Wishing you happiness, success,"
+         let wish2 ="and love."
+       if (wish) ctx2.fillText(wish, canvas2.width * 0.5, canvas2.height * 0.696);          
+    if (wish2) ctx2.fillText(wish2, canvas2.width * 0.22, canvas2.height * 0.75);               
+        
+         } else {
+              if (currentTemplate3 === "wedding" ) {
+         let wedding ="Each year with you is a new"
+         let wedding2 ="adventure, and I'm excited to see"
+      let wedding3 ="what the future holds."
+            ctx2.textAlign = "left";
+            
+             if (wedding) ctx2.fillText(wedding, canvas2.width * 0.19, canvas2.height * 0.696);          
+   ctx2.textAlign = "left";
+    if (wedding2) ctx2.fillText(wedding2, canvas2.width * 0.12, canvas2.height * 0.75);               
+          if (wedding3) ctx2.fillText(wedding3, canvas2.width * 0.12, canvas2.height * 0.804);               
+        
+         } else {
+              if (currentTemplate3 === "graduation" ) {
+         let grad ="Congratulations, graduate! May"
+         let grad2 ="your dedication lead you to"
+      let grad3 ="continued success."
+          ctx2.textAlign = "left";
+             if (grad) ctx2.fillText(grad, canvas2.width * 0.19, canvas2.height * 0.696);          
+    if (grad2) ctx2.fillText(grad2, canvas2.width * 0.12, canvas2.height * 0.75);               
+          if (grad3) ctx2.fillText(grad3, canvas2.width * 0.12, canvas2.height * 0.804);               
+        
+         } 
+         }
+         }
+         }
+         }
+               ctx2.textAlign = "right";  
+     ctx2.fillStyle = "#616161";        
+            ctx2.font = "23.7px Arial";  
+            if (tet9) ctx2.fillText(tet9, canvas2.width - 65, canvas2.height * 0.865);  
+           
+            if (bet1) ctx2.fillText(bet1, canvas2.width - 65, canvas2.height * 0.905);  
+          if (bet2) ctx2.fillText(bet2, canvas2.width - 65, canvas2.height * 0.948);  
+           };  
+           function selectItem2(element) {  
+        items5.forEach(el => el.classList.remove('selected'));  
+    element.classList.add('selected');  
+  
+document.getElementById("canvas").style.display ="none"  
+ document.getElementById("whopls").style.display ="block"; document.getElementById("canvas2").style.display ="block"  
+ document.getElementById("down2").style.display ="block"; document.getElementById("down1").style.display ="none"; 
+   document.getElementById("whopls").src ="https://res.cloudinary.com/dwbylknew/image/upload/v1747190483/uploads/afgh4nsgh2nkzmt7wtsu.jpg"
+   currentTemplate3 = "wishes";
+    currentTemplate = "wishes";  
+  currentTemplate2 = "wishes";  
+    updateCanvas2();
+}  
+  
+function selectItem3(element) {  
+        items5.forEach(el => el.classList.remove('selected'));  
+    element.classList.add('selected');  
+  
+document.getElementById("canvas").style.display ="none"  
+ document.getElementById("whopls").style.display ="block"; document.getElementById("canvas2").style.display ="block"  
+ document.getElementById("down2").style.display ="block"; document.getElementById("down1").style.display ="none"; 
+ 
+    document.getElementById("whopls").src ="https://res.cloudinary.com/dwbylknew/image/upload/v1747190638/uploads/yzmgz6qmqsunqnjnsxwl.jpg"
+currentTemplate3 = "bwish";
+currentTemplate = "birthday";
+    currentTemplate2 = "birthday";
+updateCanvas2();
+}  
+function selectItem4(element) {  
+        items5.forEach(el => el.classList.remove('selected'));  
+    element.classList.add('selected');  
+  
+document.getElementById("canvas").style.display ="none"  
+ document.getElementById("whopls").style.display ="block"; document.getElementById("canvas2").style.display ="block";
+ document.getElementById("down2").style.display ="block"; document.getElementById("down1").style.display ="none"; 
+document.getElementById("whopls").src ="https://res.cloudinary.com/dwbylknew/image/upload/v1747191175/uploads/rkbzyu5yti2ockan8hgt.jpg";
+      currentTemplate3 = "vtine";
+  currentTemplate = "wishes";  
+     currentTemplate2 = "wishes";  
+    updateCanvas2();
+    }  
+    function selectItem5(element) {  
+        items5.forEach(el => el.classList.remove('selected'));  
+    element.classList.add('selected');  
+  
+document.getElementById("canvas").style.display ="none"  
+ document.getElementById("whopls").style.display ="block"; document.getElementById("canvas2").style.display ="block"  
+  document.getElementById("down2").style.display ="block"; document.getElementById("down1").style.display ="none"; 
+  
+  document.getElementById("whopls").src ="https://res.cloudinary.com/dwbylknew/image/upload/v1747191287/uploads/opegjkmvsf8c89gdrwkr.jpg" 
+ 
+ currentTemplate3 = "wedding"
+  currentTemplate = "birthday";  
+   currentTemplate2 = "wedding";  
+    updateCanvas2();
+    }  
+function selectItem6(element) {  
+        items5.forEach(el => el.classList.remove('selected'));  
+    element.classList.add('selected');  
+  
+document.getElementById("canvas").style.display ="none"  
+  document.getElementById("canvas2").style.display ="block"  
+  document.getElementById("whopls").style.display ="block";
+ document.getElementById("down2").style.display ="block"; document.getElementById("down1").style.display ="none"; 
+ 
+  document.getElementById("whopls").src ="https://res.cloudinary.com/dwbylknew/image/upload/v1747191356/uploads/n1i2j5rzyfswxpmpzwml.jpg" 
+ currentTemplate3 = "graduation"
+  currentTemplate = "birthday";  
+    currentTemplate2 = "graduation";  
+   updateCanvas2();
+    }  
+    
+function selectItem1(element) {  
+        items5.forEach(el => el.classList.remove('selected'));  
+    element.classList.add('selected');  
+  
+document.getElementById("canvas").style.display ="block";
+  document.getElementById("canvas2").style.display ="none";
+document.getElementById("whopls").style.display ="none";
+document.getElementById("down2").style.display ="none"; document.getElementById("down1").style.display ="block"; 
+}
+function downloadImage2() {
+    let canvas = document.createElement('canvas');
+    let ctx = canvas.getContext('2d');
+
+    // Get base image from <img id="whopls">
+    let baseImg = new Image();
+    baseImg.crossOrigin = "anonymous";
+    baseImg.src = document.getElementById("whopls").src;
+
+    baseImg.onload = function () {
+        canvas.width = baseImg.width;
+        canvas.height = baseImg.height;
+        ctx.drawImage(baseImg, 0, 0, canvas.width, canvas.height);
+
+        // Load overlay logo from same image
+        let overlayImg = new Image();
+        overlayImg.crossOrigin = "anonymous";
+        overlayImg.src = document.getElementById("whopls").src;
+
+        overlayImg.onload = function () {
+            // Draw overlay logo
+            let overlayWidth = canvas.width * 0.135;
+            let overlayHeight = overlayImg.height * (overlayWidth / overlayImg.width);
+            let overlayX = canvas.width * 0.80;
+            let overlayY = canvas.height * 0.283;
+            
+            // Write text exactly as in updateCanvas2
+            ctx.textAlign = "center";
+            ctx.fillStyle = currentTemplate === "birthday" ? "black" : "white";
+            ctx.font = "500 28.3px Arial";
+            if (text2) ctx.fillText("TUAKA NWINEEWII send you", canvas.width / 2, canvas.height * 0.16);
+
+            if (currentTemplate2 === "graduation") {
+                ctx.fillStyle = "black";
+            } else if (currentTemplate2 === "birthday") {
+                ctx.fillStyle = "#4e2a00";
+            } else if (currentTemplate2 === "wedding") {
+                ctx.fillStyle = "#001d6fa5";
+            } else if (currentTemplate2 === "wishes") {
+                ctx.fillStyle = "white";
+            }
+
+            ctx.font = "bold 70px Arial";
+            ctx.fillText(`₦ ${text2}`, canvas.width / 2, canvas.height * 0.26);
+
+            ctx.fillStyle = currentTemplate === "birthday" ? "black" : "white";
+            ctx.font = "500 25.7px Arial";
+            ctx.fillText("Recipient Account:", canvas.width / 2, canvas.height * 0.318);
+
+            ctx.font = "405 25.7px Arial";
+            ctx.fillText(`${text4} | ${text5}`, canvas.width / 2, canvas.height * 0.351);
+
+            ctx.fillStyle = "white";
+            ctx.font = "600 28.7px Arial";
+            ctx.fillText(`Dear ${text3}`, canvas.width * 0.445, canvas.height * 0.646);
+
+            ctx.font = "405 28.7px Arial";
+            ctx.fillText("Wishing you happiness, success,", canvas.width * 0.48, canvas.height * 0.696);
+            ctx.fillText("and love.", canvas.width * 0.22, canvas.height * 0.73);
+
+            ctx.textAlign = "right";
+            ctx.fillStyle = "#616161";
+            ctx.font = "23.7px Arial";
+            ctx.fillText("TUAKA NWINEEWII(916***6696)", canvas.width - 65, canvas.height * 0.865);
+            ctx.fillText(currentTime, canvas.width - 65, canvas.height * 0.905);
+            ctx.fillText(`Transation ID: ${text6}`, canvas.width - 65, canvas.height * 0.948);
+
+            // Trigger download
+            let link = document.createElement('a');
+            link.download = "PalmPay.png";
+            link.href = canvas.toDataURL("image/png");
+            link.click();
+        };
+
+        overlayImg.onerror = function () {
+            alert("Overlay image failed to load.");
+        };
+    };
+
+    baseImg.onerror = function () {
+        alert("Base image failed to load.");
+    };
+}
+
+</script>
+
+</body>  
+</html> 
