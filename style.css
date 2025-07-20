@@ -1105,3 +1105,6 @@ body.lock-scroll {
       visibility: visible;
       opacity: 1;
     }
+input:focus {
+  outline: none;
+}
