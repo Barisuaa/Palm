@@ -1,0 +1,3409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Firebase Receipt Viewer</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+ <!-- Load Comic Relief font from Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Comic+Relief:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Comic+Relief:wght@400;700&family=Outfit:wght@100..900&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+  
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #121212;
+      color: white;
+      margin: 0;
+   height: 100%;
+  overflow-x: hidden;
+    -webkit-user-select: none; /* Safari */
+    -moz-user-select: none;    /* Firefox */
+    -ms-user-select: none;     /* IE10+/Edge */
+    user-select: none;         /* Standard */
+    
+    }
+
+    #balance {
+      font-size: 18px;
+      margin: 10px;
+    }
+
+    .month-header {
+      background: #1e1e1e;
+      color: white;
+      padding: 10px 10px 5px;
+      margin-left: -6px;
+        border: 0.5px solid #2c2c2c;
+      border-radius: 5px;
+      font-size: 18px;
+      font-weight: bold;
+      display: flex;
+      flex-direction: column;
+      position: sticky;
+      top: -1px;
+      z-index: 10;
+    }
+
+    .month-header .month-line {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .month-header .month-line .dropdown {
+      font-size: 14px;
+      margin-left: -4px;
+    }
+
+    .month-header .year {
+      opacity: 0;
+      font-size: 0;
+    }
+
+    .month-header .summary {
+      display: flex;
+      gap: 15px;
+      font-weight: normal;
+      font-size: 14px;
+      color: #ccc;
+      margin-top: 4px;
+    }
+
+    .entry {
+      background: #1e1e1e;
+      
+      padding: 15px 10px;
+     
+       
+    border-bottom: 0.5px solid #2c2c2c;
+    }
+
+    .entry .note {
+      font-weight: 400;
+      font-size: 14.7px;
+    }
+
+    .entry .time {
+      font-size: 11px;
+      color: #aaa;
+    padding-top: 2%;
+    }
+
+    .entry .amount {
+      font-size: 17.6px;
+      font-weight: 402;
+  position: absolute;
+   right: 6.7%;
+    }
+
+    #popup {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: #222;
+      color: white;
+      padding: 15px;
+      display: none;
+      z-index: 1000;
+      border-top-left-radius: 10px;
+      border-top-right-radius: 10px;
+    }
+
+    #popup img {
+      width: 80px;
+      margin-top: 10px;
+    }
+
+    #popupClose {
+      float: right;
+      color: red;
+      cursor: pointer;
+    }
+
+    #scroll-container {
+      height: 90vh;
+      width: 100%;
+      position: fixed;
+      top: 23%;
+      overflow-y: auto;
+      padding: 0px 6px;
+   background-color: #1e1e1e;
+    }
+ .picker-container72 {
+      width: 99.4%;
+     
+   background: #1e1e1e;
+   position: absolute;
+   bottom: 0;
+    
+    }
+
+    .header72 {
+      text-align: center;
+      font-size: 19px;
+      color: #a974f4;
+      margin-bottom: 20px;
+ border-bottom: 1px solid white;
+    margin-top: 3%;
+  padding-bottom: 3%;
+    }
+
+    .picker72 {
+      position: relative;
+      display: flex;
+      justify-content: space-between;
+      height: 150px;
+    }
+
+    .column {
+      flex: 1;
+      text-align: center;
+      overflow-y: scroll;
+      scroll-snap-type: y mandatory;
+      -webkit-overflow-scrolling: touch;
+      height: 150px;
+      scrollbar-width: none;
+    }
+
+    .column::-webkit-scrollbar {
+      display: none;
+    }
+
+    .column div {
+      height: 50px;
+      line-height: 50px;
+      scroll-snap-align: center;
+      color: #aaa;
+      font-size: 18px;
+      transition: all 0.3s;
+    }
+
+    .column .active {
+      color: #a974f4;
+      font-weight: bold;
+      font-size: 20px;
+    }
+
+    .lines72 {
+      position: absolute;
+      top: 50px;
+      left: 0;
+      right: 0;
+      height: 50px;
+      border-top: 2px solid #a974f4;
+      border-bottom: 2px solid #a974f4;
+      pointer-events: none;
+    }
+
+    .confirm72 {
+      background: #a974f4;
+      color: black;
+      font-weight: bold;
+      padding: 12px;
+      border: none;
+      width: 100%;
+      border-radius: 6px;
+      font-size: 18px;
+      margin-top: 20px;
+      
+    
+    }
+ .circle45 {
+      width: 38px;
+      height: 38px;
+      background: white;
+      border-radius: 50%;
+      position: absolute;
+      left: 50%;
+      top: 0;
+      transform: translate(-50%, 0);
+      align-items: center;
+      justify-content: center;
+      display: none;
+   z-index: 991;
+    }
+
+    .rotating-img {
+      width: 24px;
+      height: 24px;
+      transform-origin: center;
+      transition: transform 0.3s linear, opacity 0.3s ease;
+    }
+
+    .loader-circle {
+      width: 17px;
+      height: 17px;
+      border: 2px solid black;
+      border-radius: 50%;
+      border-top-color: transparent;
+      animation: spin 0.6s linear infinite;
+      opacity: 0;
+      transition: opacity 0.1s ease;
+    }
+
+   @keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); } /* Clockwise */
+}
+   .slider-container {
+      position: relative;
+      width: 91%;
+      height: 76px;
+      overflow: hidden;
+   
+border-radius: 8px;
+ 
+  
+  background: transparent;
+    }
+
+    .slider-track {
+      display: flex;
+      transition: transform 0.4s ease;
+    }
+
+    .slide {
+      min-width: 100%;
+      height: auto;
+    }
+
+    .slide img {
+      width: 100%;
+      height: auto;
+    
+      border-radius: 8px;
+    }
+
+    .dots-container {
+      text-align: center;
+   z-index: 99999999;
+    }
+
+    .dot {
+      display: inline-block;
+      width: 6px;
+      height: 6px;
+      margin: 0 1px;
+      background-color: #1e1e1e;
+      border-radius: 50%;
+      transition: background-color 0.3s ease;
+     z-index: 99999999;
+    }
+
+
+    .dot.active {
+      background-color: #a974f4;
+    }
+    .scroll-container {
+      height: 100vh;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      background: transparent;
+    }
+
+    .pull-loader {
+      position: fixed;
+      left: 50%;
+      transform: translate(-50%, -50px);
+      width: 40px;
+      height: 40px;
+      z-index: 2;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      border-radius: 50%;
+      background: transparent;
+      transition: transform 0.3s ease-out;
+    }
+
+    .pull-loader img {
+      width: 26px;
+      height: 26px;
+      background: white;
+      border-radius: 50%;
+      padding: 7px;
+      transition: transform 0.1s linear;
+    }
+
+    .spinner {
+      border: 2.7px solid black;
+      border-top: 3px solid white;
+      width: 23px;
+      height: 23px;
+      border-radius: 50%;
+      background: white;
+      animation: spin 1s linear infinite;
+      display: none;
+      box-sizing: border-box;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .content {
+      padding: 20px;
+      color: white;
+    }
+ #myIframe2 {
+      visibility: hidden;
+      opacity: 0;
+      
+    }
+    #myIframe2.show {
+      visibility: visible;
+      opacity: 1;
+    }   
+     #myIframe6 {
+      visibility: hidden;
+      opacity: 0;
+      
+    }
+    #myIframe6.show {
+      visibility: visible;
+      opacity: 1;
+    }   
+      .keypad92 {
+      margin-top: 3.1%;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 4px;
+      padding: 2px;
+      margin-left: 4px;
+      width: 97%;
+    }
+    .key92 {
+      background: #1e1e1e;
+      color: white;
+      font-size: 26px;
+      padding: 12px 21.5px;
+      border-radius: 10px;
+      text-align: center;
+      user-select: none;
+      font-weight: 510;
+    }
+    .key93 {
+      background: #1e1e1e;
+      color: white;
+      font-size: 26px;
+      padding: 12px 21.5px;
+      border-radius: 10px;
+      text-align: center;
+      user-select: none;
+      font-weight: 510;
+    }
+    
+    .pin-input-wrapper {
+      display: flex;
+      gap: 9px;
+      margin-top: 4%;
+      margin-left: 20%;
+      align-items: center;
+    }
+    .pin-input-wrapper input {
+      width: 40px;
+      height: 40px;
+      background: transparent;
+      border: 1px solid #444;
+      color: white;
+      font-size: 40px;
+      text-align: center;
+   border-radius: 4px;
+    }
+   input:focus {
+  outline: none;
+} 
+    
+  </style>
+</head>
+<body>
+
+
+
+
+<div style="display: none; width: 100%; height: 100vh;"id="transactionhisrec">
+ <div>
+   <div id="closetrans" style="position: fixed; top: 1%; z-index: 9; width: 17%; height: 6%; background: transparent; left: 2%;"></div>
+   
+    <img style=" width: 100%; height: auto; position: fixed; top: 0; z-index: 2;"src="https://res.cloudinary.com/dwbylknew/image/upload/v1747751385/uploads/tdefgagfhclgwa3llz4h.png" alt="">
+</div>
+ <div id="scroll-container2" style="position: fixed; margin-top: 42.5%;width: 100%;  height: 100vh; overflow-y: auto;">
+  
+
+ 
+<div style="width: 100%;  height: 100vh;">
+  
+ <div style="top: 6%; position: absolute; display: flex;"class="pull-loader" id="pullLoader2">
+  <img id="pullImage2" src="https://img.icons8.com/?size=100&id=88634&format=png&color=000000" alt="refresh">
+  <div id="loaderSpinner2" class="spinner"></div>
+</div>
+  
+<div style="width: 100%; height: auto;" id="historyDiv"></div>
+  </div>
+</div>
+  <div id="popup">
+    <span id="popupClose" onclick="closePopup()">Close</span>
+    <div id="popupContent"></div>
+  </div>
+<div id="pickcon" style="width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5); z-index: 4; position: absolute; top: 0; display: none;">
+<div style="display: block;"class="picker-container72">
+ 
+ <div id="closepickcon"  style="background-color: transparent; border-radius: 50%; width: 20px; height: 20px; display: flex; justify-content: center; align-items: center; position: absolute; right: 33px; margin-top: 2.2%; ">
+  <div style="font-size: 33px; color: #a974f4; font-weight: 300;">×</div>
+</div>  
+    <div class="header72" id="headerDisplay">--/----</div>
+    <div class="picker72">
+      <div class="column" id="monthScroll"></div>
+      <div class="column" id="yearScroll"></div>
+      <div class="lines72"></div>
+    </div>
+   <div  style="width: 4%; height: 25%; background-color: #1e1e1e; position: absolute; right: 47%; margin-top: -30%;"></div>
+    <button class="confirm72" onclick="storeSelection()">Confirm</button>
+  </div>
+</div>
+<div class="slideContainer"id="bank555" style="width: 100%; height: 100%; position: fixed; top: 0; z-index: 990; overflow-y: auto;  background-color: #1e1e1e; transition: right 0.3s ease; display: none; left: 0;">
+   <div style="display: flex;">
+    <div>
+       <img style="width: 100%; height: auto; top: 0; position: fixed; z-index: 991;" src="https://res.cloudinary.com/dwbylknew/image/upload/v1747751682/uploads/buegqxllronrjzyads5o.png" alt="">
+   <div id="close555" style="width: 15%; height: 7%; top: 0; background: transparent; position: fixed; z-index: 991;"></div>   
+
+  <div id="please" style="width: 34%; height: 9%; position: fixed; bottom: -2%; z-index: 9999; background: transparent; left: 2%;"></div>     
+       
+        <img style="width: 100%; height: auto; bottom: 0; position: fixed; z-index: 990; border-top: 0.5px solid #242424;" src="https://res.cloudinary.com/dwbylknew/image/upload/v1747751578/uploads/xo1y8vqcjgqystmj5odw.png" alt="">
+       
+        
+        <img style="width: 100%; height: auto;" src="https://res.cloudinary.com/dwbylknew/image/upload/v1747751756/uploads/bvbpcz22cxrunfhgzeay.jpg" alt="">
+    <img style="width: 100%; height: auto; margin-top: -1.7%; margin-bottom: 8%;" src="https://res.cloudinary.com/dwbylknew/image/upload/v1747751886/uploads/vomc9xaa3eyus6tb9vc9.png" alt="">
+     </div>
+      <div style="width: 100%; text-align: center; align-items: center; justify-content: center; left: 0; position: absolute; z-index: 990;">
+     <img id="img555" style="width: 39px; height: 39px; border-radius: 50%; margin-top: 21.2%; background: white;" src="none.png" alt=""> 
+       <div style="color: white; font-size: 16px; margin-top: 1.4%;">To <span id="name555"></span></div>   
+     <div style="font-family: "Comic Relief", system-ui; font-weight: 700; font-style: normal;">
+      <div style="font-size: 32px; margin-top: 1%; font-weight: 402;">
+         <span >₦</span> <span id="amount555">693.00</span></div></div>
+      <div style="position: absolute; right: 24px; margin-top: 20.1%; font-size: 12.3px; font-family: Arial, sans-serif;">
+          <span >₦</span> <span id="amount5552">578.00</span>
+      </div>
+      <div style="position: absolute; right: 24px; margin-top: 34.1%; font-size: 12.3px; font-family: Arial, sans-serif;">
+          <span >₦</span> <span id="amount5553">578.00</span>
+      </div>
+      <div id="name5552" style="position: absolute; right: 28.4px; margin-top: 47.7%; font-size: 14px; font-family: Arial, sans-serif; color: white;">
+      Nwineewii Tuaka Jack    
+                </div>
+  <div id="your555" style="position: absolute; right: 28.4px; margin-top: 52.9%; font-size: 13px; font-family: Arial, sans-serif; color: #b0b3b8;">
+      Nwineewii Tuaka Jack    
+                </div>   
+            <div id="13num" style="position: absolute; right: 38.4px; margin-top: 62.9%; font-size: 13px; font-family: Arial, sans-serif; color: white; width: 25%; height: 16%; text-align: right; box-sizing: border-box; line-height: 1.1;">
+ 
+</div>
+     <div  style="width: 10%; height: 16%; background: transparent; position: absolute; margin-top: 62.9%; right: 3px;"onclick="copy13Num()"></div>
+
+ <div id="time555"style="position: absolute; right: 28.4px; margin-top: 89.7%; font-size: 14px; font-family: Arial, sans-serif; color: white;">
+        
+                </div>
+    <div id="mixnum" style="position: absolute; right: 38.5px; margin-top: 98.7%; font-size: 14px; font-family: Arial, sans-serif; color: white;">
+      Nwineewii Tuaka Jack    
+                </div>
+<div  style="width: 10%; height: 16%; background: transparent; position: absolute; margin-top: 98.7%; right: 3px;"onclick="copy14Num()"></div>
+      </div>
+ </div>
+</div> 
+  <div id="bank666" style="width: 100%; height: 100%; position: fixed; top: 0; z-index: 990; overflow-y: auto; display: none; background-color: #1e1e1e; transition: right 0.3s ease;">
+   <div style="display: flex;">
+    <div>
+       <img style="width: 100%; height: auto; top: 0; position: fixed; z-index: 991;" src="https://res.cloudinary.com/dwbylknew/image/upload/v1747751682/uploads/buegqxllronrjzyads5o.png" alt="">
+   <div id="close666" style="width: 15%; height: 7%; top: 0; background: transparent; position: fixed; z-index: 991;"></div>   
+        <img style="width: 100%; height: auto; bottom: 0; position: fixed; z-index: 990; border-top: 0.5px solid #242424;" src="https://res.cloudinary.com/dwbylknew/image/upload/v1747751578/uploads/xo1y8vqcjgqystmj5odw.png" alt="">
+        <div id="please2"style="width: 34%; height: 9%; position: fixed; bottom: -2%; z-index: 9999; background: transparent; left: 2%;"></div>     
+        <img style="width: 100%; height: auto;" src="https://res.cloudinary.com/dwbylknew/image/upload/v1747751958/uploads/ev5quqratuq82hlpc1fx.jpg" alt="">
+    <img style="width: 100%; height: auto; margin-top: -1.7%; margin-bottom: 8%;" src="https://res.cloudinary.com/dwbylknew/image/upload/v1747751886/uploads/vomc9xaa3eyus6tb9vc9.png" alt="">
+     </div>
+     
+      <div style="width: 100%; text-align: center; align-items: center; justify-content: center; left: 0; position: absolute; z-index: 990;">
+     <img id="img666" style="width: 39px; height: 39px; border-radius: 50%; margin-top: 21.2%;background: white;" src="none.png" alt=""> 
+       <div style="color: white; font-size: 16px; margin-top: 1.4%;">To <span id="name666"></span></div>   
+    
+     <div style="font-family: "Comic Relief", system-ui; font-weight: 700; font-style: normal;">
+      <div style="font-size: 32px; margin-top: 1%; font-weight: 402;">
+         <span >₦</span> <span id="amount666">693.00</span></div></div>
+   <div style="margin-top: 34%;">
+      <div style="position: absolute; right: 24px; margin-top: 20.1%; font-size: 12.3px; font-family: Arial, sans-serif;">
+          <span >₦</span> <span id="amount6662">578.00</span>
+      </div>
+      <div style="position: absolute; right: 24px; margin-top: 34.1%; font-size: 12.3px; font-family: Arial, sans-serif;">
+          <span >₦</span> <span id="amount6663">578.00</span>
+      </div>
+      <div id="name6662" style="position: absolute; right: 28.4px; margin-top: 47.7%; font-size: 14px; font-family: Arial, sans-serif; çolor: white;">
+      Nwineewii Tuaka Jack    
+              </div>
+  <div id="your666" style="position: absolute; right: 28.4px; margin-top: 52.9%; font-size: 13px; font-family: Arial, sans-serif; color: #b0b3b8;">
+      Nwineewii Tuaka Jack    
+                </div>   
+        <div id="time666"style="position: absolute; right: 28.4px; margin-top: 61.7%; font-size: 14px; font-family: Arial, sans-serif; color: white;">
+        time
+                </div>   
+ <div id="mixnum2" style="position: absolute; right: 38.5px; margin-top: 70.7%; font-size: 14px; font-family: Arial, sans-serif; color: white;">
+      Nwineewii Tuaka Jack    
+                </div>
+<div  style="width: 10%; height: 16%; background: transparent; position: absolute; margin-top: 70.7%; right: 3px;"onclick="copy14Num2()"></div>
+      </div>
+ <div id="your666" style="margin-top: 9.6%; font-size: 10px; font-family: Arial, sans-serif; color: #b0b3b8; position: absolute; width: 100%; ">
+   <span id="for6661">04-17 3:41:29 PM</span>  <span id="for6662"style="padding: 0px 23px;">04-17 3:41:29 PM</span> <span id="for6663">04-17 3:41:29 PM</span>
+                </div>   
+  </div>
+</div>
+
+</div>
+<div class="slideContainer" id="bank777" style="display: none; width: 100%; height: 100%; position: fixed; top: 0; z-index: 990; overflow-y: auto; background-color: #1e1e1e; transition: right 0.3s ease; display: none; ">
+   <div style="display: flex;">
+    <div>
+   
+   <div id="close777" style="width: 15%; height: 7%; top: 0; background: transparent; position: fixed; z-index: 991;"></div>   
+       
+        <img style="width: 100%; height: auto;" src="sendyes.png" alt="">
+    
+     </div>
+      <div style="width: 100%; text-align: center; align-items: center; justify-content: center; left: 0; position: absolute; z-index: 990;">
+     <img id="img777" style="width: 39px; height: 39px; border-radius: 50%; margin-top: 21.2%; background: white;" src="fidelity-bank.png" alt=""> 
+    
+   
+     <div style="font-family: "Comic Relief", system-ui; font-weight: 700; font-style: normal;">
+      <div style="font-size: 32px; margin-top: 7.5%; font-weight: 402; color: #191919;">
+         <span >+₦</span> <span id="amount777">693.00</span></div></div>
+    
+  <div id="your777" style="position: absolute; right: 28.4px; margin-top: 26.2%; font-size: 12px; font-family: Arial, sans-serif; color: #b0b3b8;">
+     Fidelity|617***1646 
+                </div>   
+     
+<div id="time777"style="position: absolute; right: 28.4px; margin-top: 61.7%; font-size: 14px; font-family: Arial, sans-serif; color: #191919; ">
+        tt
+                </div>
+    <div id="mixnum7" style="position: absolute; right: 38.5px; margin-top: 70.7%; font-size: 14px; font-family: Arial, sans-serif; color: #191919;">
+      Nwineewii Tuaka Jack    
+                </div>
+<div  style="width: 10%; height: 16%; background: transparent; position: absolute; margin-top: 70.7%; right: 3px;"onclick="copy14Num7()"></div>
+
+<div id="mixnum72" style="position: absolute; right: 38.5px; margin-top: 79.9%; font-size: 14px; font-family: Arial, sans-serif; color: #191919;">
+      Nwineewii Tuaka Jack    
+                </div>
+<div  style="width: 10%; height: 16%; background: transparent; position: absolute; margin-top: 79.9%; right: 3px;"onclick="copy14Num72()"></div>
+
+      </div>
+ </div>
+</div>
+<div id="bank888" style="width: 100%; height: 100%; position: fixed; top: 0; z-index: 994; overflow-y: auto; background-color: #1e1e1e; transition: right 0.3s ease; display: none;">
+   <div style="display: flex;">
+    <div>
+  <img style="width: 100%; height: auto; top: 0; position: fixed; z-index: 991;" src="https://res.cloudinary.com/dwbylknew/image/upload/v1747751682/uploads/buegqxllronrjzyads5o.png" alt="">
+   <div id="close888" style="width: 15%; height: 7%; top: 0; background: transparent; position: fixed; z-index: 991;"></div>   
+        <img style="width: 100%; height: auto; bottom: 0; position: fixed; z-index: 990; border-top: 0.5px solid #242424;" src="https://res.cloudinary.com/dwbylknew/image/upload/v1747752025/uploads/rzuwe3h7gcktu69a9bpz.jpg" alt="">
+     <div id="openme1" style="width: 100%; height: 10%; bottom: 0; position: fixed; z-index: 990; background: transparent;"></div>
+     
+        <img style="width: 100%; height: auto;" src="https://res.cloudinary.com/dwbylknew/image/upload/v1747752070/uploads/gycpqsfifccq77jdhyqm.jpg" alt="">
+    <img style="width: 100%; height: auto; margin-top: -1.7%; margin-bottom: 8%;" src="https://res.cloudinary.com/dwbylknew/image/upload/v1747752156/uploads/ll06lhzkzdbbxkws7nbu.png" alt="">
+     </div>
+      <div style="width: 100%; text-align: center; align-items: center; justify-content: center; left: 0; position: absolute; z-index: 990;">
+     
+<div style="font-family: "Comic Relief", system-ui; font-weight: 700; font-style: normal; ">
+      <div style="font-size: 32px; margin-top: 37.6%; font-weight: 402; color: white; opacity: 0;">
+         <span >₦</span> <span id="amount888">693.00</span></div></div>
+    <div id="mixnum8" style="position: absolute; right: 38.5px; margin-top: 98.9%; font-size: 14px; font-family: Arial, sans-serif; color: white;">
+      Nwineewii Tuaka Jack    
+                </div>
+     
+
+<div  style="width: 10%; height: 16%; background: transparent; position: absolute; margin-top: 98.9%; right: 3px;"onclick="copy14Num8()"></div>
+
+<div id="time888"style="position: absolute; right: 28.4px; margin-top: 107.9%; font-size: 14px; font-family: Arial, sans-serif; color: white; ">
+        tt
+                </div>
+  <div id="time8882"style="position: absolute; right: 28.4px; margin-top: 116.9%; font-size: 14px; font-family: Arial, sans-serif; color: white; ">
+        tt
+                </div>
+
+
+
+      </div>
+ </div>
+</div>
+
+<div id="bank999" style="width: 100%; height: 100%; position: fixed; top: 0; z-index: 990; overflow-y: auto; display: none; background-color: #1e1e1e; transition: right 0.3s ease;">
+   <div style="display: flex;">
+    <div>
+  <img style="width: 100%; height: auto; top: 0; position: fixed; z-index: 991;" src="https://res.cloudinary.com/dwbylknew/image/upload/v1747752250/uploads/pmfhbupvfhity3ghpdeb.png" alt="">
+   <div id="close999" style="width: 15%; height: 7%; top: 0; background: transparent; position: fixed; z-index: 991;"></div>   
+        <img style="width: 100%; height: auto; bottom: 0; position: fixed; z-index: 991; border-top: 0.5px solid #242424;" src="https://res.cloudinary.com/dwbylknew/image/upload/v1747752352/uploads/wfrt8osybb46udzbrrip.png" alt="">
+        <img style="width: 100%; height: auto;" src="https://res.cloudinary.com/dwbylknew/image/upload/v1747753549/uploads/zdmhmdynlwc57bfenhjh.jpg" alt="">
+    <img style="width: 100%; height: auto; margin-top: -1.7%; margin-bottom: 8%;" src="https://res.cloudinary.com/dwbylknew/image/upload/v1747752415/uploads/klktqtpct0agytshj2tt.jpg" alt="">
+     </div>
+      <div style="width: 100%; text-align: center; align-items: center; justify-content: center; left: 0; position: absolute; z-index: 990;">
+     
+
+    <div id="mixnum84" style="position: absolute; right: 33.5px; margin-top: 175.9%; font-size: 14px; font-family: Arial, sans-serif; color: white;">
+       tt
+                </div>
+     
+
+
+
+<div id="time8884"style="position: absolute; right: 33.5px; margin-top: 187.9%; font-size: 14px; font-family: Arial, sans-serif; color: white; ">
+        tt
+                </div>
+  <div id="time8885"style="position: absolute; right: 33.5px; margin-top: 200.9%; font-size: 14px; font-family: Arial, sans-serif; color: white; ">
+        tt
+                </div>
+  <div id="time8886"style="margin-top: 63.9%; font-size: 14px; font-family: Arial, sans-serif; color: #b0b3b8; ">
+        tt
+                </div>
+
+
+
+      </div>
+ </div>
+</div>
+<div id="bank222" style="width: 100%; height: 100%; position: fixed; top: 0; z-index: 990; overflow-y: auto; display: none; background-color: #1e1e1e; transition: right 0.3s ease;">
+   <div style="display: flex;">
+    <div>
+  
+   <div id="close222" style="width: 15%; height: 7%; top: 0; background: transparent; position: fixed; z-index: 991;"></div>   
+       
+        <img style="width: 100%; height: auto;" src="https://res.cloudinary.com/dwbylknew/image/upload/v1747752525/uploads/rophdvgt8rwskztdubna.jpg" alt="">
+    
+     </div>
+      <div style="width: 100%; text-align: center; align-items: center; justify-content: center; left: 0; position: absolute; z-index: 990;">
+     
+
+    <div id="mixnu2" style="position: absolute; right: 23.5px; margin-top: 100.9%; font-size: 14px; font-family: Arial, sans-serif; color: black;">
+       tt
+                </div>
+     
+
+
+
+
+<div id="time222"style="position: absolute; right: 23.5px; margin-top: 120.1%; font-size: 14px; font-family: Arial, sans-serif; color: black; ">
+        tt
+                </div>
+ 
+      </div>
+ <div  style="width: 10%; height: 7%; background-color: transparent; position: absolute; margin-top: 103.9%; right: 3px; z-index: 999;"onclick="copyNum2()"></div>
+ </div>
+</div>
+</div>
+<div id="myIframe2" style="position: fixed; top: 0; height: 100vh; z-index: 2; width: 100%; left: 0;">
+    <iframe id="myIframe4" style="width: 100%; height: 100vh; display: block; border: none;"  src=""></iframe>
+
+</div>
+<div id="myIframe6" style="position: fixed; top: 0; height: 100vh; z-index: 2; width: 100%; left: 0;">
+    <iframe id="myIframe7" style="width: 100%; height: 100vh; display: block; border: none;"  src=""></iframe>
+
+</div>
+
+<div id="flex3">
+ <div id="maintopcon" style="width: 100%; height: 100%; position: fixed; top: 0; z-index: 990; overflow-y: auto; display: block; background-color: #1e1e1e; transition: right 0.3s ease;">
+   <div style="display: flex;">
+    <div>
+  <img style="width: 100%; height: auto; top: 0; position: fixed; z-index: 992;" src="https://res.cloudinary.com/drdylgyq3/image/upload/v1767780799/uploads/ylkyxtlvzask05lj4yp9.jpg" alt="">
+ 
+ <div style="margin-top: 6%;"class="pull-loader" id="pullLoader">
+  <img id="pullImage" src="https://img.icons8.com/?size=100&id=88634&format=png&color=000000" alt="refresh">
+  <div id="loaderSpinner" class="spinner"></div>
+</div>
+<div id="fornum" style="display: none;">
+<div style=" font-family: 'Outfit', sans-serif; font-weight: 500; font-size: 18.6px;color: white; position: absolute;  z-index: 990; margin-top: 25.3%; left: 6.5%;  display: flex;">
+    <span id="balance">0.99</span> <img  id="fineimg" style="width: 12px; height: 13px; margin-left: -3%; padding: 15px 0px 0px;" src="fine.png" alt=""> </div>
+</div>
+ 
+ <div>
+     <img id="hiddenpic"style="width: 11.1%; height: auto; position: absolute; z-index: 990; margin-top: 29.9%; left: 9%; "src="hiddenpic.png" alt="">
+ </div>    
+   <div id="changeeye" style="width: 28px; height: 28px; background: transparent; position: absolute; z-index: 991; margin-top: 19.4%; left: 37.5%;"></div>
+<img id="eyeopen"style=" width: 14.2px; height: auto; position: absolute; z-index: 1; margin-top: 21.6%; left: 41.3%; display: none;" src="openeyepic.png" alt="">  
+     
+     
+        <img style="width: 100%; height: auto; bottom: 0; position: fixed; z-index: 991; border-top: 0.5px solid #242424;" src="https://res.cloudinary.com/dwbylknew/image/upload/v1750549980/uploads/vpqi2y3gujriaolhxcbp.png" alt="">
+        <img style="width: 100%; height: auto; margin-top: 2%;" src="https://res.cloudinary.com/drdylgyq3/image/upload/v1767780586/uploads/w1qeu3qzjh5q18deaeau.jpg" alt="">
+      <img style="width: 100%; height: auto; top: 63.3%; position: absolute;margin-top: 0.5%;" src="https://res.cloudinary.com/drdylgyq3/image/upload/v1767780757/uploads/gjuotobrfkhod4t9flrs.png" alt=""> 
+       <img style="width: 100%; height: auto; top: 77.2%; position: absolute; " src="https://res.cloudinary.com/drdylgyq3/image/upload/v1767780662/uploads/co9zi6mkicwbkyvq4qy6.jpg" alt="">
+    
+    
+    <img style="width: 100%; height: 34%; margin-top: %;" src="https://res.cloudinary.com/drdylgyq3/image/upload/v1767780716/uploads/oscc60zol3hegzt9ghgn.jpg" alt="">
+     </div>
+ </div>
+ 
+<div id="noneClick" style="position: fixed; top: 1%; z-index: 999999; width: 17%; height: 6%; background: transparent;"></div>
+
+<div id="transClick" style="position: absolute; top: 9%; z-index: 1; width: 38%; height: 5%; background: transparent; right: 7%;"></div>
+
+<div id="bankClick" style="position: absolute; top: 25%; z-index: 1; width: 21%; height: 10%; background: transparent; left: 5%;"></div>
+
+ <div style="position: absolute;top: 37.2%; margin-left: 7.7%; width: 90%;">
+ <div id="todayContainer" style=" z-index: 990;   width: 90%; height: 52px; overflow: hidden;">
+   </div>
+</div>
+<div style="display: flex; justify-content: center; align-items: center; text-align: center; z-index: 89; position: absolute; width: 100%; top: 114.5%">
+  <div style="position: relative;">
+    <div class="dots-container" id="dots">
+      <span class="dot active"></span>
+      <span class="dot"></span>
+      <span class="dot"></span>
+      <span class="dot"></span>
+      <span class="dot"></span>
+      <span class="dot"></span>
+    </div>
+  </div>
+</div>
+
+
+<div style="display: flex; justify-content: center; align-items: center; text-align: center; position: absolute; top: 107.3%;">
+  <div style="" class="slider-container" id="slider">
+    <div class="slider-track" id="track">
+      <div class="slide"><img src="https://res.cloudinary.com/dwbylknew/image/upload/v1750550159/uploads/yqwvbvibqddxvhyx4cu3.jpg" /></div>
+      <div class="slide"><img src="https://res.cloudinary.com/dwbylknew/image/upload/v1750550203/uploads/l0nmg9eke52enutswmtq.jpg" /></div>
+      <div class="slide"><img src="https://res.cloudinary.com/dwbylknew/image/upload/v1750550230/uploads/bfafhymjqnw4gomchelw.jpg" /></div>
+      <div class="slide"><img src="https://res.cloudinary.com/dwbylknew/image/upload/v1750550268/uploads/zz9gifbyu2v316yeuwdi.jpg" /></div>
+      <div class="slide"><img src="https://res.cloudinary.com/dwbylknew/image/upload/v1750550293/uploads/ryw8kcyi8uygvcamwwna.jpg" /></div>
+      <div class="slide"><img src="https://res.cloudinary.com/dwbylknew/image/upload/v1750550316/uploads/ahjq0hudisrbp9z4qqd4.jpg" /></div>
+    </div>
+  </div>
+</div>
+</div>
+</div>
+
+
+<div id="flex4" style="width: 100%; height: 100vh; overflow-y: auto; display: none;">
+  <img style="position: fixed; top: 0; left: 0; width: 100%; height: auto;" src="added1.png" alt="">  
+<div id="noneClick2" style="position: fixed; top: 1%; z-index: 999999; width: 17%; height: 6%; background: transparent;"></div>
+<img style="width: 100%; height: auto;" src="added2.png" alt="">
+<img style="width: 100%; height: auto;" src="added3.png" alt="">
+</div>
+ <div id="inactiveContainer" style="display:none; background:#1e1e1e; color:#b30000; text-align:center; width: 100%; height: 100vh; position: absolute; z-index: 999998989899; top: 0; left: 0; ">
+  
+  <div id="mainvid" style="position: fixed; margin-left: 38%; top: 45%; display: none; z-index: 999;">
+  <video  width="84" height="84" autoplay muted loop>
+    <source src="https://res.cloudinary.com/dwbylknew/video/upload/v1750552049/uploads/e4uncukpqmzmvx5yqiac.mp4" type="video/mp4">
+    Your browser does not support the video tag.
+  </video></div>
+  
+  
+  <div style="position: absolute; color: white; font-size: 15px; top: 6%; right: 5%;">Switch Account</div>
+  <div style="margin-top: 26%;"><img style="width: 67px; height: 67px; border-radius: 50%;"src="https://res.cloudinary.com/dwbylknew/image/upload/v1750600453/uploads/zundwr701hflio3gwyj3.png" alt="">
+  </div>
+ <div style="color: white; font-size: 21px; margin-top: 3%;">(091****6696)</div>
+ <div style="color: #d7d7d7; font-size: 14px; margin-top: 5%;">Enter Password to login</div>
+ <div class="pin-input-wrapper">
+      <input id="ella3" type="password" maxlength="1" readonly>
+      <input id="ella4"type="password" maxlength="1" readonly>
+      <input id="ella5" type="password" maxlength="1" readonly>
+      <input id="ella6"type="password" maxlength="1" readonly>
+      </div>
+    <div style="font-size: 14.8px;font-weight: 400; margin-top: 27%; color: #8B5CF6;">
+      Forgot Password
+    </div>
+    <div style="background-color: #2e2e2e;  position: absolute; width: 100%; bottom: 0;">
+      <div style="font-size: 12.4px;font-weight: 400; color: white; padding-top: 10px;">
+  
+   <div style="display: flex; text-align: center; justify-content: center; align-items: center; gap: 2%;">
+   <img style="width: 16px; height: 15px;" src="https://img.icons8.com/?size=100&id=85804&format=png&color=40C057" alt="">   
+       <span>PalmPay Secure Keypad</span></div>
+      </div>
+      <div class="keypad92">
+        <div class="key92">1</div>
+        <div class="key92">2</div>
+        <div class="key92">3</div>
+        <div class="key92">4</div>
+        <div class="key92">5</div>
+        <div class="key92">6</div>
+        <div class="key92">7</div>
+        <div class="key92">8</div>
+        <div class="key92">9</div>
+        <div style="opacity: 0;" class="key93">0</div>
+        <div class="key92">0</div>
+        <div style="background: transparent;" id="backspaceKey92" class="key92">&#x232B;</div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+</div>
+
+
+<!-- Time display -->
+<div id="conttim" style="margin:10px; font-weight:bold; position: absolute; top: 0; opacity: 0;"></div>
+</div>
+
+
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+  <script>
+
+let myMonth ="";
+   let myYear ="";
+    const firebaseConfig = {
+      apiKey: "AIzaSyBZehk_8tWBhQOtCcS3VTzRRSCFCLvFGQA",
+      authDomain: "tuak-9f342.firebaseapp.com",
+      databaseURL: "https://tuak-9f342-default-rtdb.firebaseio.com",
+      projectId: "tuak-9f342",
+      storageBucket: "tuak-9f342.appspot.com",
+      messagingSenderId: "9176071516",
+      appId: "1:9176071516:web:38491206a78ed1c4035599",
+      measurementId: "G-BM58W3CJTQ"
+    };
+
+   // REQUIRED DOM REF
+const historyDiv = document.getElementById("historyDiv");
+
+// FIREBASE
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+
+ 
+let monthlyData = {};
+ 
+let lastBalance = null;
+let lastDecimal = null;
+
+function listenToPalmBalance() {
+  firebase.database().ref("PalmBalance").on("value", snapshot => {
+    const rawBalance = Number(snapshot.val()) || 0;
+
+    // If balance changed, generate a new random decimal
+    if (rawBalance !== lastBalance) {
+      lastDecimal = Math.floor(Math.random() * 99) + 1; // 1–99
+      lastBalance = rawBalance;
+    }
+
+    const finalBalance = rawBalance + (lastDecimal / 100);
+
+    const formatted = finalBalance.toLocaleString("en-NG", {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    });
+
+    document.getElementById("balance").textContent = `₦${formatted}`;
+    localStorage.setItem("palmBal", `₦${formatted}`);
+
+  }, error => {
+    console.error("❌ PalmBalance listener error:", error);
+  });
+}
+  
+
+  // Start listening immediately
+  listenToPalmBalance();
+// MASK NAME
+function maskName(name) {
+  if (!name) return "";
+  if (name.length <= 16) return name;
+  return name.slice(0, 16) + "..."; // 14 chars + 3 dots = 17 total
+}
+// MONTH KEY EXTRACTOR USING TIMESTAMP
+function extractMonthKeyFromTimestamp(ts) {
+  const d = new Date(ts);
+  const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
+                      "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  return `${monthNames[d.getMonth()]} ${d.getFullYear()}`;
+}
+
+// MONTH SUMMARY
+function getMonthSummaryFromFirebase(month, year, callback) {
+  db.ref(`MonthlySummary/${year}/${month}`).once("value", snap => {
+    if (snap.exists()) {
+      callback({
+        in: Number(snap.val().in || 0),
+        out: Number(snap.val().out || 0)
+      });
+    } else {
+      callback({ in: 0, out: 0 });
+    }
+  });
+}
+
+function processReceiptData() {
+  console.log("▶ processReceiptData started");
+
+  if (!historyDiv) {
+    console.error("❌ historyDiv is NULL");
+    return;
+  }
+
+  historyDiv.innerHTML = "";
+  monthlyData = {};
+
+  db.ref("TransactionHistory").once("value")
+    .then(snapshot => {
+
+      if (!snapshot.exists()) {
+        console.error("❌ TransactionHistory EMPTY");
+        return;
+      }
+
+      const allData = [];
+
+      snapshot.forEach(child => {
+        const val = child.val();
+        if (val && val.timestamp) {
+          allData.push(val);
+        }
+      });
+
+      if (allData.length === 0) return;
+
+      // SORT newest first
+      allData.sort((a, b) => b.timestamp - a.timestamp);
+
+      // 🔥 DOM fragment (CRITICAL)
+      const fragment = document.createDocumentFragment();
+
+      allData.forEach(data => {
+
+        const monthKey = extractMonthKeyFromTimestamp(data.timestamp);
+        const [mon, year] = monthKey.split(" ");
+
+        // CREATE MONTH GROUP ONCE
+        if (!monthlyData[monthKey]) {
+
+          const header = document.createElement("div");
+          header.className = "month-header";
+          header.innerHTML = `
+            <div id="showpick" class="month-line">
+              <div style="margin-left:3%;">
+                <span>${mon}</span>
+                <span class="year">${year}</span>
+                <span class="dropdown">▾</span>
+              </div>
+            </div>
+            <div style="margin-left:3%;" class="summary">
+              <div>In ₦0.00</div>
+              <div>Out ₦0.00</div>
+            </div>
+          `;
+
+          const container = document.createElement("div");
+          container.className = "month-container";
+
+          // Attach picker handler once
+          const showpick = header.querySelector("#showpick");
+          if (showpick) {
+            showpick.onclick = () => {
+              document.getElementById("pickcon").style.display = "block";
+              localStorage.setItem("activeContainer", "pickcon");
+              initializePicker();
+            };
+          }
+
+          // Fetch summary ONCE
+          db.ref(`MonthlySummary/${year}/${mon}`).once("value")
+            .then(snap => {
+              const summary = snap.exists()
+                ? {
+                    in: Number(snap.val().in || 0),
+                    out: Number(snap.val().out || 0)
+                  }
+                : { in: 0, out: 0 };
+
+              header.querySelector(".summary").innerHTML = `
+                <div>In <span style="color:white;">₦${summary.in.toLocaleString(undefined,{minimumFractionDigits:2})}</span></div>
+                <div>Out <span style="color:white;">₦${summary.out.toLocaleString(undefined,{minimumFractionDigits:2})}</span></div>
+              `;
+            });
+
+          monthlyData[monthKey] = { header, container };
+
+          fragment.appendChild(header);
+          fragment.appendChild(container);
+        }
+
+        // ===== ENTRY =====
+        const note = data.note || "";
+        const fee1 = `${data.fees || ""}`;
+        const isSent = note.includes("sent") || fee1.includes("sepp");
+
+        const nameMasked = data.name2
+          ? data.name2
+          : (isSent ? maskName(data.name) : "Interbank transfer");
+
+        const displayName = fee1.includes("sepp")
+          ? "Electronic Money Transfer Levy"
+          : (isSent && !data.name2 ? "Send - " + nameMasked : nameMasked);
+
+        let imgSrc = data.name2
+          ? "https://res.cloudinary.com/dwbylknew/image/upload/v1747753656/uploads/qewd8mg35i1vy5jmutny.png"
+          : (isSent
+            ? "https://res.cloudinary.com/dwbylknew/image/upload/v1747753697/uploads/czzrgypkpy88ibrkqvgo.png"
+            : "https://res.cloudinary.com/dwbylknew/image/upload/v1747753759/uploads/kot9nycz8qhjwfmi6awc.png");
+
+        if (fee1.includes("sepp")) {
+          imgSrc = "https://res.cloudinary.com/dwbylknew/image/upload/v1747753817/uploads/f7qfxllxnvwdxrdj1lw0.png";
+        }
+
+        const div = document.createElement("div");
+        div.className = "entry";
+        div.innerHTML = `
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:2.4%;">
+            <div>
+              <div style="display:flex;">
+                <img style="height:35px;width:35px;border-radius:50%;" src="${imgSrc}">
+                <div style="padding:0 8px;" class="note">${displayName}</div>
+              </div>
+              <div style="position:absolute;margin-left:11.6%;margin-top:-3%;" class="time">${data.time2}</div>
+            </div>
+            <div style="margin-top:1.3%;" class="amount">${isSent ? "-" : "+"}${data.amount}</div>
+          </div>
+        `;
+
+        div.addEventListener("click", () => showPopup(data));
+
+        monthlyData[monthKey].container.appendChild(div);
+      });
+
+      // ✅ SINGLE DOM INSERT (CRITICAL)
+      historyDiv.appendChild(fragment);
+
+      processTodayEntries();
+      console.log("✔ Rendering completed:", allData.length);
+    })
+    .catch(err => console.error("❌ Firebase read failed:", err));
+}
+const popup = document.getElementById('popup');
+const popupContent = document.getElementById('popupContent');
+
+let animationTimer = null;
+
+function processTodayEntries() {
+  const todayContainer = document.getElementById("todayContainer");
+  todayContainer.innerHTML = "";
+
+  function formatTimeFromTimestamp(ts) {
+    const date = new Date(ts);
+    let hours = date.getHours();
+    let minutes = date.getMinutes();
+    const ampm = hours >= 12 ? "PM" : "AM";
+    hours = hours % 12 || 12;
+    return `Today ${hours}:${minutes.toString().padStart(2, "0")} ${ampm}`;
+  }
+
+  function createStyledTodayEntry(entry) {
+    if (!entry.timestamp) return null;
+
+    const entryDate = new Date(entry.timestamp);
+    if (isNaN(entryDate)) return null;
+
+    const note = entry.note?.trim() || "";
+    const note3 = entry.bank2 || "";
+
+    let amountText = entry.amount?.trim() || "";
+    amountText = amountText.replace(/^[-+]/, "");
+
+    let title = note;
+    let subText = "Success";
+
+    if (note3.toLowerCase().includes("mobile")) {
+      title = "Buy data Bundle";
+    } else if (note.toLowerCase().includes("sent")) {
+      title = "Transfer Successful";
+    } else if (note.toLowerCase().includes("received")) {
+      title = "Money Received";
+    } else if (note.toLowerCase().includes("levy")) {
+      title = "Electronic Transfer Levy";
+    }
+
+    const formattedTime = formatTimeFromTimestamp(entry.timestamp);
+
+    const div = document.createElement("div");
+    div.innerHTML = `
+      <div style="display: flex; flex-direction: column; justify-content: center; padding: 10px; background: transparent;">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <div style="font-size: 14px; font-weight: 400; color: white;">${title}</div>
+        </div>
+        <div class="time" style="font-size: 12px; color: #b0b3b8; position: absolute; right: 1px;">
+          ${formattedTime}
+        </div>
+        <div style="display: flex; justify-content: space-between; margin-top: 3px;">
+          <div style="font-size: 12px; color: #b0b3b8;">₦${amountText} ${subText}</div>
+        </div>
+      </div>
+    `;
+    return div;
+  }
+
+  function fadeOutIn(nextElement) {
+    nextElement.style.opacity = "0";
+    nextElement.style.transition = "opacity 0.3s ease";
+
+    todayContainer.style.transition = "transform 0.6s ease, opacity 0.1s ease";
+    todayContainer.style.transform = "translateY(15px)";
+    todayContainer.style.opacity = "0";
+
+    setTimeout(() => {
+      todayContainer.innerHTML = "";
+      todayContainer.appendChild(nextElement);
+      todayContainer.style.transform = "translateY(0)";
+      todayContainer.style.opacity = "1";
+
+      requestAnimationFrame(() => {
+        setTimeout(() => {
+          nextElement.style.opacity = "1";
+        }, 10);
+      });
+    }, 300);
+  }
+
+  function startDisplay(entries) {
+    const topThree = entries.slice(0, 3).map(e => e.element);
+
+    
+
+    const fullLoop = [...topThree];
+    let index = 0;
+
+    if (animationTimer) {
+      clearTimeout(animationTimer);
+      animationTimer = null;
+    }
+
+    function displayLoop() {
+      fadeOutIn(fullLoop[index]);
+      index = (index + 1) % fullLoop.length;
+      animationTimer = setTimeout(displayLoop, 4000);
+    }
+
+    displayLoop();
+  }
+
+  db.ref("TransactionHistory").once("value", (snapshot) => {
+    const data = snapshot.val();
+    const entries = [];
+
+    for (let key in data) {
+      const entry = data[key];
+      if (!entry.timestamp) continue;
+
+      const entryEl = createStyledTodayEntry(entry);
+      if (entryEl) {
+        entries.push({
+          element: entryEl,
+          time: entry.timestamp
+        });
+      }
+    }
+
+    // ✅ SORT BY TIMESTAMP (NEWEST FIRST)
+    entries.sort((a, b) => b.time - a.time);
+
+    if (entries.length > 0) {
+      startDisplay(entries);
+    }
+  });
+}
+
+
+  
+function showPopup(data) {
+
+ 
+
+ const bankrec = `${data.bankrec}`;
+  const checkpalm = `${data.thisispalm}`;
+const seenyes = `${data.seen}`;
+  const glo = `${data.thisglo}`;
+  const thisfee = `${data.thisfee}`;
+  
+   if (checkpalm == 665 && bankrec == 555) {
+    document.getElementById("name555").textContent = `${data.name}`; localStorage.setItem("accountHolderName", data.name);
+   document.getElementById("amount555").textContent = `${data.amount}`;
+
+const fun = `₦ ${data.amount}`
+localStorage.setItem("setAmount", fun);
+    document.getElementById("amount5552").textContent = `${data.amount}`;
+    document.getElementById("amount5553").textContent = `${data.amount}`;
+    document.getElementById("name5552").textContent = `${data.name}`;
+    document.getElementById("your555").textContent = `${data.bank} | ${data.account}`;
+   
+   localStorage.setItem("selectedBankName", data.bank);
+localStorage.setItem("accountNumber", data.account);
+   
+   
+    let secno = `${data.sectionno}`;
+ localStorage.setItem("sectionno", data.sectionno);   
+    document.getElementById("13num").innerHTML = secno.slice(0, 6) + "<br>" + secno.slice(6);
+    document.getElementById("time555").textContent = `${data.time}`;
+localStorage.setItem("formattedTime2", data.time3);       
+    
+    document.getElementById("mixnum").textContent = `${data.transid}`;
+ localStorage.setItem("randomNumber", data.transid);     
+ 
+  
+
+// BANK NAME → IMAGE MAP
+const bankImages = {
+  "Access Bank": "access-bank.png",
+  "Abbey Mortgage Bank": "abbey.png",
+  "ALAT by WEMA": "alat-by-wema.png",
+  "ASO Savings and Loans": "asosavings.png",
+  "Citibank Nigeria": "citibank-nigeria.png",
+  "Ecobank Nigeria": "ecobank-nigeria.png",
+  "Ekondo Microfinance Bank": "ekondo-microfinance-bank.png",
+  "Fidelity Bank": "fidelity-bank.png",
+  "First Bank of Nigeria": "first-bank-of-nigeria.png",
+  "First City Monument Bank": "first-city-monument-bank.png",
+  "Globus Bank": "globus-bank.png",
+  "Guaranty Trust Bank": "guaranty-trust-bank.png",
+  "Heritage Bank": "heritage-bank.png",
+  "Kuda Bank": "kuda-bank.png",
+  "Keystone Bank": "keystone-bank.png",
+  "Lotus Bank": "lotus-bank.png",
+  "Moniepoint": "moniepoint-mfb-ng.png",
+  "PalmPay": "palmpay.png",
+  "Opay": "paycom.png",
+  "Paga": "paga.png",
+  "Polaris Bank": "polaris-bank.png",
+  "Sparkle Microfinance Bank": "sparkle-microfinance-bank.png",
+  "Standard Chartered Bank": "standard-chartered-bank.png",
+  "Stanbic IBTC Bank": "stanbic-ibtc-bank.png",
+  "Sterling Bank": "sterling-bank.png",
+  "TAJ Bank": "taj-bank.png",
+  "United Bank For Africa": "united-bank-for-africa.png",
+  "Union Bank of Nigeria": "union-bank-of-nigeria.png",
+  "Wema Bank": "wema-bank.png",
+  "Zenith Bank": "zenith-bank.png"
+};
+
+// SET BANK IMAGE
+
+  const img = document.getElementById("img555");
+
+  if (!data || !data.bank) return;
+
+  const bankName = data.bank.trim();
+
+  if (bankImages[bankName]) {
+    img.src = bankImages[bankName];
+  } else {
+    img.src = "https://res.cloudinary.com/dwbylknew/image/upload/v1750580312/uploads/jsmgt4vraclflvahwdn2.jpg"; 
+  }
+
+
+
+
+const checkMe ="notpalm"
+   localStorage.setItem("amen", checkMe);   
+            
+ localStorage.setItem('mark', "noo"); 
+ 
+ document.getElementById("myIframe7").src ="index27.html" 
+ 
+  const bank555 = document.getElementById("bank555");
+
+
+  bank555.style.display = "block";
+ let pos = 100; // start from left 100%
+  const interval = setInterval(() => {
+    pos -= 10; // slide speed
+    if (pos <= 0) {
+      pos = 0;
+      clearInterval(interval);
+    }
+    bank555.style.left = pos + '%';
+  }, 1); 
+
+const idme ="resdis";
+   localStorage.setItem('activeContainer', idme);
+ }
+
+  if (checkpalm == 666 && bankrec == 555) {
+    document.getElementById("name666").textContent = `${data.name}`;
+  const fun = `₦ ${data.amount}`
+localStorage.setItem("setAmount", fun);
+
+   localStorage.setItem("accountHolderName", data.name);
+   localStorage.setItem("sectionno", data.sectionno);   
+   localStorage.setItem("selectedBankName", data.bank);
+localStorage.setItem("accountNumber", data.account);
+localStorage.setItem("randomNumber", data.transid);     
+localStorage.setItem("formattedTime2", data.time3);       
+     document.getElementById("amount666").textContent = `${data.amount}`;
+    document.getElementById("amount6662").textContent = `${data.amount}`;
+    document.getElementById("amount6663").textContent = `${data.amount}`;
+    document.getElementById("name6662").textContent = `${data.name}`;
+    document.getElementById("your666").textContent = `${data.bank} | ${data.account}`;
+    document.getElementById("img666").src = `${data.pic}`;
+
+     document.getElementById("time666").textContent = `${data.time }`;
+   let formatted = formatTimeFromText(data.time);
+   function formatTimeFromText(timeString) {
+  // Clean invalid 24hr + PM format
+  timeString = timeString.replace(/(\d{2}):(\d{2}):(\d{2})\s*PM/i, (_, h, m, s) => {
+    let hour = parseInt(h);
+    if (hour > 12) hour -= 12;
+    return `${hour}:${m}:${s} PM`;
+  });
+
+  let date = new Date(timeString);
+
+  let month = String(date.getMonth() + 1).padStart(2, '0');
+  let day = String(date.getDate()).padStart(2, '0');
+  let hour = date.getHours();
+  let minutes = String(date.getMinutes()).padStart(2, '0');
+  let seconds = String(date.getSeconds()).padStart(2, '0');
+  let ampm = hour >= 12 ? 'PM' : 'AM';
+
+  hour = hour % 12;
+  hour = hour ? hour : 12;
+
+  return `${month}-${day} ${hour}:${minutes}:${seconds} ${ampm}`;
+} document.getElementById("for6661").textContent = formatted;
+document.getElementById("for6662").textContent = formatted;
+document.getElementById("for6663").textContent = formatted; document.getElementById("mixnum2").textContent = `${data.transid}`;
+    
+    const checkMe ="palmpay"
+   localStorage.setItem("amen", checkMe);   
+localStorage.setItem('mark', "noo");            
+    document.getElementById("myIframe7").src ="index27.html" 
+    
+    const bank555 = document.getElementById("bank666");
+
+
+  bank555.style.display = "block";
+ let pos = 100; // start from left 100%
+  const interval = setInterval(() => {
+    pos -= 10; // slide speed
+    if (pos <= 0) {
+      pos = 0;
+      clearInterval(interval);
+    }
+    bank555.style.left = pos + '%';
+  }, 1); 
+
+const idme ="resdis";
+   localStorage.setItem('activeContainer', idme);
+  }
+if (seenyes == 777) {
+     function formatTimeFromText(timeString) {
+  // Fix invalid 24hr + PM time
+  timeString = timeString.replace(/(\d{2}):(\d{2}):(\d{2})\s*PM/i, (_, h, m, s) => {
+    let hour = parseInt(h);
+    if (hour > 12) hour -= 12;
+    return `${hour}:${m}:${s} PM`;
+  });
+
+  let date = new Date(timeString);
+
+  // Format 1: MM-DD h:mm:ss AM/PM
+  let month = String(date.getMonth() + 1).padStart(2, '0');
+  let day = String(date.getDate()).padStart(2, '0');
+  let hour = date.getHours();
+  let minutes = String(date.getMinutes()).padStart(2, '0');
+  let seconds = String(date.getSeconds()).padStart(2, '0');
+  let ampm = hour >= 12 ? 'PM' : 'AM';
+  let hour12 = hour % 12 || 12;
+
+  let format1 = `${month}-${day} ${hour12}:${minutes}:${seconds} ${ampm}`;
+
+  // Format 2: HH:mm, Month DD, YYYY
+  const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
+                      "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  let format2 = `${String(hour).padStart(2, '0')}:${minutes}, ${monthNames[date.getMonth()]} ${day}, ${date.getFullYear()}`;
+
+  return { format1, format2 };
+}
+    let { format1, format2 } = formatTimeFromText(data.time);
+
+    document.getElementById("time777").textContent = format2;
+   document.getElementById("amount777").textContent = `${data.amount}`
+   document.getElementById("mixnum7").textContent = `${data.transid}`
+   document.getElementById("mixnum72").textContent = `${data.sectionno}`
+     const bank555 = document.getElementById("bank777");
+
+
+  bank555.style.display = "block";
+   
+ let pos = 100; // start from left 100%
+  const interval = setInterval(() => {
+    pos -= 10; // slide speed
+    if (pos <= 0) {
+      pos = 0;
+      clearInterval(interval);
+    }
+    bank555.style.left = pos + '%';
+  }, 1); 
+   const idme ="bank7";
+   localStorage.setItem('activeContainer', idme);
+     }
+      
+    if (glo == 888) {
+     function formatTimeFromText(timeString) {
+  // Fix invalid 24hr + PM time
+  timeString = timeString.replace(/(\d{2}):(\d{2}):(\d{2})\s*PM/i, (_, h, m, s) => {
+    let hour = parseInt(h);
+    if (hour > 12) hour -= 12;
+    return `${hour}:${m}:${s} PM`;
+  });
+
+  let date = new Date(timeString);
+
+  // Format 1: MM-DD h:mm:ss AM/PM
+  let month = String(date.getMonth() + 1).padStart(2, '0');
+  let day = String(date.getDate()).padStart(2, '0');
+  let hour = date.getHours();
+  let minutes = String(date.getMinutes()).padStart(2, '0');
+  let seconds = String(date.getSeconds()).padStart(2, '0');
+  let ampm = hour >= 12 ? 'PM' : 'AM';
+  let hour12 = hour % 12 || 12;
+
+  let format1 = `${month}-${day} ${hour12}:${minutes}:${seconds} ${ampm}`;
+
+  // Format 2: HH:mm, Month DD, YYYY
+  const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
+                      "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  let format2 = `${String(hour).padStart(2, '0')}:${minutes}, ${monthNames[date.getMonth()]} ${day}, ${date.getFullYear()}`;
+
+  return { format1, format2 };
+}
+    let { format1, format2 } = formatTimeFromText(data.time);
+
+    document.getElementById("time888").textContent = format2;
+   document.getElementById("time8882").textContent = format2;
+ document.getElementById("time8884").textContent = format2;
+ document.getElementById("time8885").textContent = format2;
+ document.getElementById("time8886").textContent = `${data.time}`;
+  
+   
+   document.getElementById("amount888").textContent = `${data.amount}`
+   document.getElementById("mixnum8").textContent = `${data.transid}`
+   document.getElementById("mixnum84").textContent = `${data.transid}`
+   const bank555 = document.getElementById("bank888");
+
+
+  bank555.style.display = "block";
+ let pos = 100; // start from left 100%
+  const interval = setInterval(() => {
+    pos -= 10; // slide speed
+    if (pos <= 0) {
+      pos = 0;
+      clearInterval(interval);
+    }
+    bank555.style.left = pos + '%';
+  }, 1); 
+  
+  const idme ="bank8";
+   localStorage.setItem('activeContainer', idme);
+   }
+       if (thisfee == 222) {
+     document.getElementById("mixnu2").textContent = `${data.transid}`
+
+document.getElementById("time222").textContent = `${data.time}`
+       const bank555 = document.getElementById("bank222");
+
+
+  bank555.style.display = "block";
+let pos = 100; // start from left 100%
+  const interval = setInterval(() => {
+    pos -= 10; // slide speed
+    if (pos <= 0) {
+      pos = 0;
+      clearInterval(interval);
+    }
+    bank555.style.left = pos + '%';
+  }, 1); 
+
+ 
+   const idme ="bank2";
+   localStorage.setItem('activeContainer', idme);
+    }
+    }
+
+function saveToFirebase() {
+      const hala2 = localStorage.getItem("setAmount2");
+  
+   const name1 = localStorage.getItem("accountHolderName");
+   const bank1 = 
+   localStorage.getItem("selectedBankName");
+    
+ const account1 = 
+ localStorage.getItem("accountNumber");  
+const pic1 =  localStorage.getItem("editlogo");  
+ const time1 =   
+ localStorage.getItem("formattedTime3"); 
+const time2 = 
+ localStorage.getItem("formattedTime");
+const time3 = 
+ localStorage.getItem("formattedTime2");
+ const sectionno1 =  localStorage.getItem("sectionno");
+ const transid1 = 
+ localStorage.getItem("randomNumber");
+ const timestamp = Date.now();
+ const thisispalm2 = 
+localStorage.getItem("checkbank");
+      let amount = hala2;
+      const data = {
+        name: name1,
+        account: account1,
+        bank: bank1,
+        amount: amount,
+        formattedAmount: `₦${amount}`,
+        time: time1,
+        time2: time2,
+       timestamp: timestamp,
+        time3: time3,
+        pic: pic1,
+        note: "money: sent",
+     bankrec: "555",
+     sectionno: sectionno1,
+     transid: transid1,
+    thisispalm: thisispalm2
+      };
+      
+ db.ref("TransactionHistory").push(data); 
+
+  // Get current month & year
+    const date = new Date();
+    const year = date.getFullYear();
+    const month = date.toLocaleString("en-US", { month: "short" });
+
+   
+function parseAmount(value) {
+  if (!value) return 0;
+  return Number(value.toString().replace(/,/g, ""));
+}
+
+
+  const inputValue = amount; // amount can be "40,000.00"
+
+  if (!inputValue) return;
+
+  const inputAmount = parseAmount(inputValue);
+  
+
+  const ref = db.ref(`MonthlySummary/${year}/${month}/out`);
+
+  ref.once("value").then(snapshot => {
+    const dbOutRaw = snapshot.val() || "0.00";
+    const dbOut = parseAmount(dbOutRaw);
+
+    // Add to existing out
+    let result = dbOut + inputAmount;
+
+    // Ensure no negative value
+    result = Math.abs(result);
+
+    // Save back formatted
+    ref.set(result.toFixed(2))
+      .then(() => {
+   const palmRef = db.ref("PalmBalance");
+
+      return palmRef.once("value").then(snapshot => {
+        const currentPalm = parseAmount(snapshot.val() || 0);
+        let newPalm = currentPalm - inputAmount;
+        newPalm = Math.abs(newPalm);
+
+        return palmRef.set(newPalm.toFixed(2));
+      });     
+   
+     });
+  }).catch(error => {
+    console.error(error);
+   
+  });
+
+ if (inputAmount > 10000) {
+   
+     
+  
+ 
+ };
+ 
+ processReceiptData(); 
+   processTodayEntries();
+    };
+
+function taxes() {
+   let faketime = "";
+let faketime2 = "";
+ const now = new Date(); // real device time
+
+  // Format 1: With seconds
+  const finalOutput =
+    now.toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "short",
+      day: "numeric"
+    }) +
+    ", " +
+    now.toLocaleTimeString("en-US", {
+      hour: "numeric",
+      minute: "2-digit",
+      second: "2-digit",
+      hour12: true
+    });
+
+  // Format 2: Without seconds
+  const secondTime =
+    now.toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "short",
+      day: "numeric"
+    }) +
+    " " +
+    now.toLocaleTimeString("en-US", {
+      hour: "numeric",
+      minute: "2-digit",
+      hour12: true
+    });
+
+  faketime = finalOutput;
+  faketime2 = secondTime;
+
+  console.log("Real time (with seconds):", faketime);
+  console.log("Real time (without seconds):", faketime2);
+  
+   // Get current month & year
+    const date = new Date();
+    const year = date.getFullYear();
+    const month = date.toLocaleString("en-US", { month: "short" });
+    
+ function parseAmount(value) {
+  if (!value) return 0;
+  return Number(value.toString().replace(/,/g, ""));
+}
+
+const inputValue = "50";
+
+if (!inputValue) return;
+ const inputAmount = parseAmount(inputValue);
+  
+  const ref = db.ref(`MonthlySummary/${year}/${month}/out`);
+
+  ref.once("value").then(snapshot => {
+    const dbOutRaw = snapshot.val() || "0.00";
+    const dbOut = parseAmount(dbOutRaw);
+
+    // Add to existing out
+    let result = dbOut + inputAmount;
+
+    // Ensure no negative value
+    result = Math.abs(result);
+
+    // Save back formatted
+    ref.set(result.toFixed(2))
+      .then(() => {
+       const palmRef = db.ref("PalmBalance");
+
+      return palmRef.once("value").then(snapshot => {
+        const currentPalm = parseAmount(snapshot.val() || 0);
+        let newPalm = currentPalm - inputAmount;
+        newPalm = Math.abs(newPalm);
+
+        return palmRef.set(newPalm.toFixed(2));
+      });      
+    
+      });
+  }).catch(error => {
+    console.error(error);
+   
+  });
+   
+ const timestamp = Date.now();
+const digits2 = '0123456789';
+  const letters2 = 'abcdefghijklmnopqrstuvwxyz';
+
+  // Generate a 28-digit random number
+  let numberPart = '';
+  for (let i = 0; i < 28; i++) {
+    numberPart += digits2.charAt(Math.floor(Math.random() * digits2.length));
+  }
+
+  // Generate 2 random letters
+  let letterPart = '';
+  for (let i = 0; i < 2; i++) {
+    letterPart += letters2.charAt(Math.floor(Math.random() * letters2.length));
+  }
+
+  const finalValue = numberPart + letterPart;
+
+  
+    const hala3 ="50.00"
+        const amount = hala3;
+        const data = {
+          name3: "",
+         amount: amount,
+          formattedAmount: `₦${amount}`,
+          time: `${faketime}`,
+      timestamp: timestamp,
+       time2: `${faketime2}`,
+        transid: `${finalValue}`,
+          note: "money: levy",
+        thisfee: "222",
+        fees: "money: sepp"
+        };
+    db.ref("TransactionHistory").push(data);
+  
+};
+
+let faketime = "";
+let faketime2 = "";
+let stamptime = "";
+
+function fires2() {
+  const now = new Date();
+
+  const currentHour = now.getHours();
+  const currentMinute = now.getMinutes();
+
+  // Calculate the minimum allowed hour (6 hours before now or 0 if less than 6)
+  const minAllowedHour = Math.max(0, currentHour - 6);
+
+  // Generate a random hour between minAllowedHour and currentHour
+  let randHour = Math.floor(Math.random() * (currentHour - minAllowedHour + 1)) + minAllowedHour;
+
+  // If random hour is the same as current hour, limit the random minute
+  let maxMinute = (randHour === currentHour) ? currentMinute - 1 : 59;
+
+  // Make sure maxMinute is not negative
+  if (maxMinute < 0) maxMinute = 0;
+
+  let randMinute = Math.floor(Math.random() * (maxMinute + 1));
+
+  // Seconds can be random or fixed to zero
+  let randSecond = Math.floor(Math.random() * 60);
+
+  const randomDate = new Date(
+    now.getFullYear(),
+    now.getMonth(),
+    now.getDate(),
+    randHour,
+    randMinute,
+    randSecond
+  );
+
+  // Format 1: With seconds
+  const finalOutput = randomDate.toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "short",
+    day: "numeric"
+  }) + ", " + randomDate.toLocaleTimeString("en-US", {
+    hour: "numeric",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: true
+  });
+
+  // Format 2: Without seconds
+  const secondTime = randomDate.toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "short",
+    day: "numeric"
+  }) + " " + randomDate.toLocaleTimeString("en-US", {
+    hour: "numeric",
+    minute: "2-digit",
+    hour12: true
+  });
+
+  faketime = finalOutput;
+  faketime2 = secondTime;
+
+ const input = faketime;
+
+      if (!input) {
+       
+        return;
+      }
+
+      // Parse the input date string
+      const localDate = new Date(input);
+
+      if (isNaN(localDate.getTime())) {
+        alert("Invalid date format! Use format like: Jan 5, 2026, 12:44:38 AM");
+        return;
+      }
+
+      // Nigeria is UTC+1 → subtract 1 hour to get UTC timestamp
+      const timestamp = localDate.getTime() - (1 * 60 * 60 * 1000);
+
+      stamptime = timestamp;
+
+  console.log("Fake time (with seconds):", faketime);
+  console.log("Fake time (without seconds):", faketime2);
+}
+
+function addMoney() {
+  
+    // Generate random amount
+    const mostlyRange = Math.random() < 0.8; // 80% chance for 9000 - 40000
+    const min = mostlyRange ? 9000 : 2000;
+    const max = mostlyRange ? 40000 : 65000;
+    const randomAmount = Math.floor(Math.random() * (max - min + 1)) + min;
+
+    // Format with commas and decimal places
+    const ranamount1 = randomAmount.toLocaleString('en-NG', { 
+      minimumFractionDigits: 2, 
+      maximumFractionDigits: 2 
+    });
+
+    const hala3 = ranamount1;
+const free =
+parseFloat(hala3.toString().replace(/,/g, ''));
+
+
+
+const letters = 'abcdefghijklmnopqrstuvwxyz';
+  const digits = '0123456789';
+
+  const getRandom = (source, count) => {
+    let result = '';
+    for (let i = 0; i < count; i++) {
+      result += source.charAt(Math.floor(Math.random() * source.length));
+    }
+    return result;
+  };
+
+  const part1 = getRandom(digits, 3);   // 3 digits
+  const part2 = getRandom(letters, 2);  // 2 letters
+  const part3 = getRandom(digits, 1);   // 1 digit
+  const part4 = getRandom(letters, 2);  // 2 letters
+  const part5 = getRandom(digits, 3);   // 3 digits
+  const part6 = getRandom(letters, 2);  // 2 letters
+
+  const finalID = part1 + part2 + part3 + part4 + part5 + part6;
+
+  const digits2 = '0123456789';
+  const letters2 = 'abcdefghijklmnopqrstuvwxyz';
+
+  // Generate a 28-digit random number
+  let numberPart = '';
+  for (let i = 0; i < 28; i++) {
+    numberPart += digits2.charAt(Math.floor(Math.random() * digits2.length));
+  }
+
+  // Generate 2 random letters
+  let letterPart = '';
+  for (let i = 0; i < 2; i++) {
+    letterPart += letters2.charAt(Math.floor(Math.random() * letters2.length));
+  }
+
+  const finalValue = numberPart + letterPart;
+
+ fires2();
+    const amount = hala3;
+    const data = {
+      name: "TUAKA JACK NWINEEWII",
+      account: "6173781646",
+      bank: "Fidelity",
+      amount: amount,
+      formattedAmount: `₦${amount}`,
+      time: `${faketime}`,
+    timestamp: stamptime,
+     time2: `${faketime2}`,
+      pic: "https://logo.clearbit.com/fidelitybank.ng",
+      transid: `${finalID}`,
+      sectionno: `${finalValue}`,
+      note: "money: received",
+      seen: "777"
+    };
+  db.ref("TransactionHistory").push(data);
+// Get current month & year
+    const date = new Date();
+    const year = date.getFullYear();
+    const month = date.toLocaleString("en-US", { month: "short" });
+
+   
+function parseAmount(value) {
+  if (!value) return 0;
+  return Number(value.toString().replace(/,/g, ""));
+}
+
+
+  const inputValue = amount; // amount can be "40,000.00"
+
+  if (!inputValue) return;
+
+  const inputAmount = parseAmount(inputValue);
+  
+
+  const ref = db.ref(`MonthlySummary/${year}/${month}/in`);
+
+  ref.once("value").then(snapshot => {
+    const dbOutRaw = snapshot.val() || "0.00";
+    const dbOut = parseAmount(dbOutRaw);
+
+    // Add to existing out
+    let result = dbOut + inputAmount;
+
+    // Ensure no negative value
+    result = Math.abs(result);
+
+    // Save back formatted
+    ref.set(result.toFixed(2))
+      .then(() => {
+   const palmRef = db.ref("PalmBalance");
+
+      return palmRef.once("value").then(snapshot => {
+        const currentPalm = parseAmount(snapshot.val() || 0);
+        let newPalm = currentPalm + inputAmount;
+        newPalm = Math.abs(newPalm);
+
+        return palmRef.set(newPalm.toFixed(2));
+      });     
+   
+     });
+  }).catch(error => {
+    console.error(error);
+   
+  });
+
+
+};
+function saveGlo() {
+     const letters = 'abcdefghijklmnopqrstuvwxyz';
+  const digits = '0123456789';
+
+  const getRandom = (source, count) => {
+    let result = '';
+    for (let i = 0; i < count; i++) {
+      result += source.charAt(Math.floor(Math.random() * source.length));
+    }
+    return result;
+  };
+
+  const part1 = getRandom(digits, 3);   // 3 digits
+  const part2 = getRandom(letters, 2);  // 2 letters
+  const part3 = getRandom(digits, 3);   // 1 digit
+  const part4 = getRandom(letters, 2);  // 2 letters
+  const part5 = getRandom(digits, 1);   // 3 digits
+  const part6 = getRandom(letters, 2);  // 2 letters
+
+  const finalID = part1 + part2 + part3 + part4 + part5 + part6;
+
+    const now = new Date();
+
+const currentHour = now.getHours();
+const currentMinute = now.getMinutes();
+
+// Minimum allowed hour (not more than 6 hours earlier)
+const minAllowedHour = Math.max(0, currentHour - 6);
+
+// Generate random hour between minAllowedHour and currentHour - 1
+let randomHour = Math.floor(Math.random() * (currentHour - minAllowedHour)) + minAllowedHour;
+
+// If random hour is the same as current hour, limit the random minute to be earlier than the current minute
+let maxMinute = (randomHour === currentHour) ? currentMinute - 1 : 59;
+let randomMinute = Math.floor(Math.random() * (maxMinute + 1));
+
+// Seconds can be random or set to zero
+let randomSecond = Math.floor(Math.random() * 60);
+
+const randomDate = new Date(
+  now.getFullYear(),
+  now.getMonth(),
+  now.getDate(),
+  randomHour,
+  randomMinute,
+  randomSecond
+);
+
+// Format 1: With seconds
+const finalOutput = randomDate.toLocaleDateString("en-US", {
+  year: "numeric",
+  month: "short",
+  day: "numeric"
+}) + ", " + randomDate.toLocaleTimeString("en-US", {
+  hour: "numeric",
+  minute: "2-digit",
+  second: "2-digit",
+  hour12: true
+});
+
+// Format 2: Without seconds
+const secondTime = randomDate.toLocaleDateString("en-US", {
+  year: "numeric",
+  month: "short",
+  day: "numeric"
+}) + " " + randomDate.toLocaleTimeString("en-US", {
+  hour: "numeric",
+  minute: "2-digit",
+  hour12: true
+});
+
+ const input = finalOutput;
+
+      if (!input) {
+       
+        return;
+      }
+
+      // Parse the input date string
+      const localDate = new Date(input);
+
+      if (isNaN(localDate.getTime())) {
+        alert("Invalid date format! Use format like: Jan 5, 2026, 12:44:38 AM");
+        return;
+      }
+
+      // Nigeria is UTC+1 → subtract 1 hour to get UTC timestamp
+      const timestamp = localDate.getTime() - (1 * 60 * 60 * 1000);
+
+      stamptime = timestamp;
+      
+
+console.log(finalOutput);
+console.log(secondTime);
+
+    const hala3 ="200.00"
+        const amount = hala3;
+        const data = {
+          name2: "Buy Data bundle",
+          account: "9160246696",
+          bank2: "Mobile data",
+          amount: amount,
+          formattedAmount: `₦${amount}`,
+          time: `${finalOutput}`,
+        timestamp: stamptime,
+          time2: `${secondTime}`,
+        transid: `${finalID}`,
+          pic: "https://logo.clearbit.com/fcmb.com",
+          note: "money: sent",
+        thisglo: "888"
+        };
+    db.ref("TransactionHistory").push(data);
+ 
+ // Get current month & year
+    const date = new Date();
+    const year = date.getFullYear();
+    const month = date.toLocaleString("en-US", { month: "short" });
+
+   
+function parseAmount(value) {
+  if (!value) return 0;
+  return Number(value.toString().replace(/,/g, ""));
+}
+
+
+  const inputValue = "200"; // amount can be "40,000.00"
+
+  if (!inputValue) return;
+
+  const inputAmount = parseAmount(inputValue);
+  
+
+  const ref = db.ref(`MonthlySummary/${year}/${month}/out`);
+
+  ref.once("value").then(snapshot => {
+    const dbOutRaw = snapshot.val() || "0.00";
+    const dbOut = parseAmount(dbOutRaw);
+
+    // Add to existing out
+    let result = dbOut + inputAmount;
+
+    // Ensure no negative value
+    result = Math.abs(result);
+
+    // Save back formatted
+    ref.set(result.toFixed(2))
+      .then(() => {
+   const palmRef = db.ref("PalmBalance");
+
+      return palmRef.once("value").then(snapshot => {
+        const currentPalm = parseAmount(snapshot.val() || 0);
+        let newPalm = currentPalm - inputAmount;
+        newPalm = Math.abs(newPalm);
+
+        return palmRef.set(newPalm.toFixed(2));
+      });     
+   
+     });
+  }).catch(error => {
+    console.error(error);
+   
+  });
+ 
+  };
+
+function checkAndRunEvery6Hours() {
+  const key = "lastFireTime2";
+  const now = new Date();
+  const lastRunStr2 = localStorage.getItem(key);
+  const lastRun2 = lastRunStr2 ? new Date(lastRunStr2) : null;
+
+  console.log("Now:", now.toISOString());
+  console.log("Last Run from localStorage:", lastRunStr2);
+
+  if (!lastRun2 || (now - lastRun2) >= 14 * 60 * 60 * 1000) {
+    // Run the function and save the new timestamp
+    console.log("16 hours passed or first time. Running autoSaveEvery20s() now...");
+      saveGlo();
+    localStorage.setItem(key, now.toISOString());
+  } else {
+    const hoursPassed = (now - lastRun2) / (1000 * 60 * 60);
+    const hoursLeft = 16 - hoursPassed;
+    console.log(`Not yet 16 hours. Please wait another ${hoursLeft.toFixed(2)} hour(s).`);
+  }
+};
+
+
+function checkAndRunEvery16Hours() {
+  const key = "lastFireTime1";
+  const now = new Date();
+  const lastRunStr = localStorage.getItem(key);
+  const lastRun = lastRunStr ? new Date(lastRunStr) : null;
+
+  console.log("Now:", now.toISOString());
+  console.log("Last Run from localStorage:", lastRunStr);
+
+  if (!lastRun || (now - lastRun) >= 19 * 60 * 60 * 1000) {
+    // Run the function and save the new timestamp
+    console.log("16 hours passed or first time. Running autoSaveEvery20s() now...");
+     
+  addMoney();
+  localStorage.setItem(key, now.toISOString());
+  } else {
+    const hoursPassed = (now - lastRun) / (1000 * 60 * 60);
+    const hoursLeft = 16 - hoursPassed;
+    console.log(`Not yet 16 hours. Please wait another ${hoursLeft.toFixed(2)} hour(s).`);
+  }
+};
+checkAndRunEvery16Hours();
+checkAndRunEvery6Hours();
+
+const monthScroll = document.getElementById('monthScroll');
+    const yearScroll = document.getElementById('yearScroll');
+    const headerDisplay = document.getElementById('headerDisplay');
+    const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
+                        "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+    const currentDate = new Date();
+    const currentMonth = currentDate.getMonth(); // 0-indexed
+    const currentYear = currentDate.getFullYear();
+
+    function createScrollItems(container, items, isMonth = false) {
+      const spacerTop = document.createElement('div');
+      spacerTop.style.height = '50px';
+      container.appendChild(spacerTop);
+
+      items.forEach(value => {
+        const div = document.createElement('div');
+        div.textContent = isMonth ? value.toString().padStart(2, '0') : value;
+        container.appendChild(div);
+      });
+
+      const spacerBottom = document.createElement('div');
+      spacerBottom.style.height = '50px';
+      container.appendChild(spacerBottom);
+    }
+
+    createScrollItems(monthScroll, Array.from({ length: 12 }, (_, i) => i + 1), true);
+    createScrollItems(yearScroll, Array.from({ length: 27 }, (_, i) => i + 2013));
+
+    function updateActive(scroll) {
+      const items = scroll.querySelectorAll('div');
+      let centerY = scroll.scrollTop + scroll.clientHeight / 2;
+      let closest = null;
+      let minDiff = Infinity;
+
+      items.forEach((el) => {
+        const rect = el.getBoundingClientRect();
+        const elCenterY = rect.top + rect.height / 2;
+        const containerCenterY = scroll.getBoundingClientRect().top + scroll.clientHeight / 2;
+        const diff = Math.abs(elCenterY - containerCenterY);
+        if (diff < minDiff) {
+          minDiff = diff;
+          closest = el;
+        }
+        el.classList.remove('active');
+      });
+
+      if (closest) {
+        closest.classList.add('active');
+      }
+    }
+
+    function updateDisplay() {
+      const activeMonth = monthScroll.querySelector('.active');
+      const activeYear = yearScroll.querySelector('.active');
+      if (activeMonth && activeYear) {
+        headerDisplay.textContent = `${activeMonth.textContent}/${activeYear.textContent}`;
+      }
+    }
+
+    function onScroll(scroll) {
+      clearTimeout(scroll._timeout);
+      scroll._timeout = setTimeout(() => {
+        updateActive(scroll);
+        updateDisplay();
+      }, 100);
+    }
+
+    monthScroll.addEventListener('scroll', () => onScroll(monthScroll));
+    yearScroll.addEventListener('scroll', () => onScroll(yearScroll));
+
+    function scrollToMiddle(scroll, index) {
+      const itemHeight = 50;
+      const targetScrollTop = itemHeight * index;
+      requestAnimationFrame(() => {
+        scroll.scrollTop = targetScrollTop;
+        setTimeout(() => {
+          updateActive(scroll);
+          updateDisplay();
+        }, 150);
+      });
+    }
+
+    function initializePicker() {
+  const monthIndex = currentMonth;
+  const yearIndex = currentYear - 2013;
+
+  scrollToMiddle(monthScroll, monthIndex);
+  scrollToMiddle(yearScroll, yearIndex);
+
+  setTimeout(() => {
+    updateActive(monthScroll);
+    updateActive(yearScroll);
+    updateDisplay();
+  }, 200); // Delay lets layout fully render
+}
+    function storeSelection() {
+     
+    
+      const month = monthScroll.querySelector('.active')?.textContent;
+      const year = yearScroll.querySelector('.active')?.textContent;
+      if (month && year) {
+        localStorage.setItem("selectedMonth", monthNames[parseInt(month) - 1]);
+        localStorage.setItem("selectedYear", year);
+       
+     myMonth = `${monthNames[parseInt(month) - 1]}`
+      myYear = `${year}`
+      
+     scrollToMonth();
+    
+      
+      }
+    }
+window.addEventListener('load', () => {
+ 
+ 
+  const monthIndex = currentMonth;
+  const yearIndex = currentYear - 2013;
+
+  scrollToMiddle(monthScroll, monthIndex);
+  scrollToMiddle(yearScroll, yearIndex);
+
+  // Force update immediately even if hidden
+  setTimeout(() => {
+    updateActive(monthScroll);
+    updateActive(yearScroll);
+    updateDisplay();
+  }, 200); // Let the scroll settle before updating
+});
+function scrollToMonth() {
+  const monthKey = `${myMonth} ${myYear}`;
+  const section = monthlyData[monthKey];
+  const scrollContainer = document.getElementById('scroll-container2');
+
+  // Remove any existing message
+  const existingMessage = document.getElementById('noHistoryMsg');
+  if (existingMessage) existingMessage.remove();
+
+  if (section) {
+    const header = section.header;
+
+    // Temporarily disable sticky
+    header.style.position = 'static';
+
+    requestAnimationFrame(() => {
+      const offsetTop = header.offsetTop - scrollContainer.offsetTop;
+      scrollContainer.scrollTop = offsetTop;
+
+      setTimeout(() => {
+        header.style.position = 'sticky';
+        header.style.top = '0px';
+
+        // Only scroll 20px more if we're not already at the top
+        if (scrollContainer.scrollTop > 0) {
+          scrollContainer.scrollTop += 148;
+        }
+      }, 200);
+    });
+document.getElementById("pickcon").style.display ="none"
+ localStorage.setItem('activeContainer', "transClick"); 
+ 
+  } else {
+    const msg = document.createElement('div');
+    msg.id = 'noHistoryMsg';
+    msg.textContent = `No transaction history for ${monthKey}`;
+    msg.style.color = 'gray';
+    msg.style.fontSize = '16px';
+    msg.style.padding = '20px';
+    scrollContainer.appendChild(msg);
+  }
+}
+
+
+setTimeout(() => {
+    document.getElementById("myIframe7").src ="index27.html";
+  }, 2200);
+
+
+  processReceiptData();  
+     document.getElementById("close555").addEventListener('click', () => {
+  const bank555 = document.getElementById("bank555");
+ let pos = 0; // start from left 0%
+  const interval = setInterval(() => {
+    pos += 10; // slide out
+    if (pos >= 100) {
+      pos = 100;
+      clearInterval(interval);
+      bank555.style.display = 'none';
+    }
+    bank555.style.left = pos + '%';
+  }, 1);
+
+localStorage.setItem('activeContainer', "transClick"); 
+ });
+ document.getElementById("close666").addEventListener('click', () => {
+ 
+const bank555 = document.getElementById("bank666");
+let pos = 0; // start from left 0%
+  const interval = setInterval(() => {
+    pos += 10; // slide out
+    if (pos >= 100) {
+      pos = 100;
+      clearInterval(interval);
+      bank555.style.display = 'none';
+    }
+    bank555.style.left = pos + '%';
+  }, 1);
+
+localStorage.setItem('activeContainer', "transClick"); 
+ });
+ document.getElementById("close777").addEventListener('click', () => {
+ const bank555 = document.getElementById("bank777");
+
+let pos = 0; // start from left 0%
+  const interval = setInterval(() => {
+    pos += 10; // slide out
+    if (pos >= 100) {
+      pos = 100;
+      clearInterval(interval);
+      bank555.style.display = 'none';
+    }
+    bank555.style.left = pos + '%';
+  }, 1);
+
+localStorage.setItem('activeContainer', "transClick"); 
+
+ });
+ 
+ document.getElementById("close888").addEventListener('click', () => {
+ 
+const bank555 = document.getElementById("bank888");
+let pos = 0; // start from left 0%
+  const interval = setInterval(() => {
+    pos += 10; // slide out
+    if (pos >= 100) {
+      pos = 100;
+      clearInterval(interval);
+      bank555.style.display = 'none';
+    }
+    bank555.style.left = pos + '%';
+  }, 1);
+
+localStorage.setItem('activeContainer', "transClick"); 
+
+ });
+ document.getElementById("openme1").addEventListener('click', () => {
+  const bank888 = document.getElementById("bank888");
+bank888.style.display = "none";
+const bank555 = document.getElementById("bank999");
+bank555.style.display = "block";
+  let pos = 100; // start from left 100%
+  const interval = setInterval(() => {
+    pos -= 10; // slide speed
+    if (pos <= 0) {
+      pos = 0;
+      clearInterval(interval);
+    }
+    bank555.style.left = pos + '%';
+  }, 1);
+localStorage.setItem('activeContainer', "bank9"); 
+}); document.getElementById("close999").addEventListener('click', () => {
+ const bank999 = document.getElementById("bank999");
+ 
+let pos = 0; // start from left 0%
+  const interval = setInterval(() => {
+    pos += 10; // slide out
+    if (pos >= 100) {
+      pos = 100;
+      clearInterval(interval);
+      bank999.style.display = "none";
+    }
+    bank999.style.left = pos + '%';
+  }, 1);
+ setTimeout(() => {
+ const bank555 = document.getElementById("bank888");
+bank555.style.display = "block";
+ }, 100);
+ const idme ="bank8";
+   localStorage.setItem('activeContainer', idme);  
+   
+ });
+ document.getElementById("close222").addEventListener('click', () => {
+ 
+ const bank555 = document.getElementById("bank222");
+
+  let pos = 0; // start from left 0%
+  const interval = setInterval(() => {
+    pos += 10; // slide out
+    if (pos >= 100) {
+      pos = 100;
+      clearInterval(interval);
+      bank555.style.display = 'none';
+    }
+    bank555.style.left = pos + '%';
+  }, 1);
+const idme ="transClick";
+   localStorage.setItem('activeContainer', idme);  
+
+ });
+ document.getElementById("closepickcon").addEventListener('click', () => {
+ document.getElementById("pickcon").style.display ="none"
+ localStorage.setItem('activeContainer', "transClick"); 
+ });
+ 
+document.getElementById("pickcon").addEventListener("click", function (e) {
+    
+    if (e.target === pickcon) {
+      document.getElementById("pickcon").style.display ="none"
+
+localStorage.setItem('activeContainer', "transClick"); 
+ }
+ });
+  let storemeRunning = false; // ✅ Global flag to prevent overlap
+
+function closeActiveDis() {
+  if (storemeRunning) return; // ✅ Block if already running
+  storemeRunning = true; // ✅ Set running flag
+
+  const id = localStorage.getItem('activeContainer');
+
+  const show = (id) => document.getElementById(id).style.display = "block";
+  const hide = (id) => document.getElementById(id).style.display = "none";
+
+  const slideOut = (el, delay = 300) => {
+    setTimeout(() => {
+      el.style.right = "-100%";
+      el.style.display = "none";
+      storemeRunning = false; // ✅ Unlock after slideOut
+    }, delay);
+  };
+
+  if (id === 'noneClick') {
+    show("flex3");
+    hide("flex4");
+    localStorage.setItem('activeContainer', "home");
+    storemeRunning = false;
+
+  } else if (id === 'transClick') {
+    hide("transactionhisrec");
+    show("flex3");
+    localStorage.setItem('activeContainer', "home");
+    storemeRunning = false;
+
+  } else if (['bank5', 'bank6', 'bank8'].includes(id)) {
+    const elId = {
+      bank5: "bank555",
+      bank6: "bank666",
+      
+      bank8: "bank888"
+    }[id];
+    slideOut(document.getElementById(elId)); // Unlock handled inside slideOut
+    localStorage.setItem('activeContainer', "transClick");
+
+  } else if (id === 'bank2') {
+    const bank555 = document.getElementById("bank222");
+
+  let pos = 0; // start from left 0%
+  const interval = setInterval(() => {
+    pos += 10; // slide out
+    if (pos >= 100) {
+      pos = 100;
+      clearInterval(interval);
+      bank555.style.display = 'none';
+    }
+    bank555.style.left = pos + '%';
+  }, 1);
+const idme ="transClick";
+   localStorage.setItem('activeContainer', idme);  
+   
+   
+    storemeRunning = false;
+
+  } else if (id === 'bank9') {
+    const bank999 = document.getElementById("bank999");
+ 
+let pos = 0; // start from left 0%
+  const interval = setInterval(() => {
+    pos += 10; // slide out
+    if (pos >= 100) {
+      pos = 100;
+      clearInterval(interval);
+      bank999.style.display = "none";
+    }
+    bank999.style.left = pos + '%';
+  }, 1);
+ setTimeout(() => {
+ const bank555 = document.getElementById("bank888");
+bank555.style.display = "block";
+ }, 100);
+ const idme ="bank8";
+   localStorage.setItem('activeContainer', idme);  
+   
+    storemeRunning = false;
+
+  } else if (id === 'bank7') {
+    const bank555 = document.getElementById("bank777");
+
+let pos = 0; // start from left 0%
+  const interval = setInterval(() => {
+    pos += 10; // slide out
+    if (pos >= 100) {
+      pos = 100;
+      clearInterval(interval);
+      bank555.style.display = 'none';
+    }
+    bank555.style.left = pos + '%';
+  }, 1);
+
+localStorage.setItem('activeContainer', "transClick"); 
+
+   
+    storemeRunning = false;
+
+  } else if (id === 'viewedit') {
+          
+   const iframe2 = document.getElementById("myIframe2");
+   const iframe3 = document.getElementById("myIframe6");
+  
+  let pos = 0; // start from left 0%
+  const interval = setInterval(() => {
+    pos += 10; // slide out
+    if (pos >= 100) {
+      pos = 100;
+      clearInterval(interval);
+      iframe3.style.visibility = "hidden";
+ iframe3.style.opacity = "0";
+   }
+    iframe3.style.left = pos + '%';
+ localStorage.setItem('activeContainer', "successP");
+
+ }, 1);
+  setTimeout(() => {
+    iframe2.style.visibility = "visible";
+ iframe2.style.opacity = "1";   
+storemeRunning = false;
+
+ }, 200);
+  } else if (id === 'please') {
+          
+   const iframe2 = document.getElementById("transactionhisrec");
+   const iframe3 = document.getElementById("myIframe6");
+  
+  let pos = 0; // start from left 0%
+  const interval = setInterval(() => {
+    pos += 10; // slide out
+    if (pos >= 100) {
+      pos = 100;
+      clearInterval(interval);
+      iframe3.style.visibility = "hidden";
+ iframe3.style.opacity= "0";
+   }
+    iframe3.style.left = pos + '%';
+ localStorage.setItem('activeContainer', "resdis");
+
+ }, 1);
+  setTimeout(() => {
+    iframe2.style.display = "block";
+ 
+storemeRunning = false;
+
+ }, 200);
+  } else if (id === 'resdis') {
+          
+   const iframe2 = document.getElementById("bank555");
+   const iframe3 = document.getElementById("bank666");
+  const iframe4 = document.getElementById("transactionhisrec");
+  
+  let pos = 0; // start from left 0%
+  const interval = setInterval(() => {
+    pos += 10; // slide out
+    if (pos >= 100) {
+      pos = 100;
+      clearInterval(interval);
+      iframe3.style.display = "none";
+       iframe2.style.display = "none";
+
+   }
+    iframe3.style.left = pos + '%';
+    iframe2.style.left = pos + '%';
+ localStorage.setItem('activeContainer', "transClick");
+
+ }, 1);
+  setTimeout(() => {
+    iframe4.style.display = "block";
+ 
+storemeRunning = false;
+
+ }, 200);
+  } else if (id === 'pickcon') {
+    hide("pickcon");
+    localStorage.setItem('activeContainer', "transClick");
+    storemeRunning = false;
+
+  } else if (id === 'successP' || id === 'why1' || id === 'barry9' || id === 'viewedit') {
+    const iframe = document.getElementById("myIframe4");
+    if (iframe?.contentWindow) {
+      try {
+        const doc = iframe.contentWindow.document;
+
+        if (id === 'successP') {
+          const target = doc.getElementById("successP");
+          const next = doc.getElementById("why1");
+          slideIframeLeft(target, () => {
+            next.style.display = "block";
+            localStorage.setItem('activeContainer', "why1");
+            storemeRunning = false;
+          });
+
+        } else if (id === 'why1') {
+          const target = doc.getElementById("why1");
+          const next = doc.getElementById("transferpage");
+   
+          
+
+          slideIframeLeft(target, () => {
+            next.style.display = "block";
+             localStorage.setItem('activeContainer', "transpage");
+            storemeRunning = false;
+          });
+
+        } else if (id === 'barry9') {
+          ["barry9", "enterpin", "cancelpage"].forEach(id => {
+            const el = doc.getElementById(id);
+            if (el) el.style.display = "none";
+          });
+          localStorage.setItem('activeContainer', "why1");
+          storemeRunning = false;
+
+        } 
+        
+      } catch (err) {
+        console.error("iframe error", err);
+        storemeRunning = false;
+      }
+    } else {
+      storemeRunning = false;
+    }
+        
+  } else if (id === 'transpage') {
+    const iframe2 = document.getElementById("myIframe2");
+    let pos = 0;
+
+    const interval = setInterval(() => {
+      pos += 10;
+      iframe2.style.left = pos + '%';
+
+      if (pos >= 100) {
+        clearInterval(interval);
+        iframe2.style.left = "100%";
+        iframe2.style.display = "none";
+        localStorage.setItem('activeContainer', "home");
+
+        setTimeout(() => {
+          storemeRunning = false; // ✅ Unlock after reload
+          location.reload();
+        }, 100);
+      }
+    }, 5);
+  }
+
+  function slideIframeLeft(target, onComplete) {
+    let pos = 0;
+    const interval = setInterval(() => {
+      pos += 10;
+      if (pos >= 100) {
+        clearInterval(interval);
+        target.style.display = "none";
+        if (onComplete) onComplete();
+      } else {
+        target.style.left = pos + '%';
+      }
+    }, 1);
+  }
+
+  function slideIframeLeft2(target2, onComplete) {
+    let pos = 0;
+    const interval = setInterval(() => {
+      pos += 10;
+      if (pos >= 100) {
+        clearInterval(interval);
+        target2.style.visibility = "hidden";
+        target2.style.pointerEvents = "none";
+        if (onComplete) onComplete();
+      } else {
+        target2.style.left = pos + '%';
+      }
+    }, 1);
+  }
+}
+
+let timeUpdaterInterval = null;
+
+// Format time (HH:mm:ss)
+function formatTime(date) {
+  const hh = String(date.getHours()).padStart(2, '0');
+  const mm = String(date.getMinutes()).padStart(2, '0');
+  const ss = String(date.getSeconds()).padStart(2, '0');
+  return `${hh}:${mm}:${ss}`;
+}
+
+// Start interval to save current time
+function startInterval() {
+  if (!timeUpdaterInterval && localStorage.getItem("waitingToResume") !== "true") {
+    timeUpdaterInterval = setInterval(() => {
+      const now = Date.now();
+      document.getElementById("conttim").textContent = formatTime(new Date(now));
+      localStorage.setItem("lastActiveTimestamp", now);
+    }, 1000); // every 1 second
+  }
+}
+
+// Stop interval
+function stopInterval() {
+  if (timeUpdaterInterval) {
+    clearInterval(timeUpdaterInterval);
+    timeUpdaterInterval = null;
+  }
+}
+
+// Resume after inactivity
+function resumeTimer() {
+  localStorage.removeItem("waitingToResume");
+  document.getElementById("inactiveContainer").style.display = "none";
+  startInterval();
+
+
+}
+
+// Always check on load
+function checkInactivityOnLoad() {
+  const now = Date.now();
+  const lastTime = parseInt(localStorage.getItem("lastActiveTimestamp") || "0");
+
+  if (localStorage.getItem("waitingToResume") === "true") {
+    // Previously paused
+    document.getElementById("inactiveContainer").style.display = "block";
+    stopInterval();
+    return;
+  }
+
+  if (lastTime && now - lastTime > 6000) {
+    // Inactive for more than 6s
+    localStorage.setItem("waitingToResume", "true");
+    document.getElementById("inactiveContainer").style.display = "block";
+    stopInterval();
+  } else {
+    startInterval();
+  }
+}
+// Stop timer on tab hidden or close
+document.addEventListener("visibilitychange", () => {
+  if (document.hidden) {
+    stopInterval();
+
+  }
+});
+// check timer on tab hidden or close
+document.addEventListener("visibilitychange", () => {
+  if (!document.hidden) {
+   checkInactivityOnLoad(); 
+
+  }
+});
+
+// ✅ Check as soon as page loads
+checkInactivityOnLoad();
+document.getElementById("myIframe4").src ="index8.html";
+const inputs = document.querySelectorAll('.pin-input-wrapper input');
+  const key7 = document.querySelectorAll('.key92');
+  
+  let currentInputIndex = 0;
+
+  key7.forEach(key => {
+    key.addEventListener('click', () => {
+      const keyValue = key.innerText;
+
+      if (key.id === 'backspaceKey92') {
+        if (currentInputIndex > 0) currentInputIndex--;
+        inputs[currentInputIndex].value = '';
+        return;
+      }
+
+      if (/^\d$/.test(keyValue) && currentInputIndex < inputs.length) {
+        inputs[currentInputIndex].value = keyValue;
+        currentInputIndex++;
+
+        if (currentInputIndex === inputs.length) {
+          const pin = Array.from(inputs).map(i => i.value).join('');
+          if (pin === '1617') {
+      document.getElementById("ella3").value =""        
+  document.getElementById("ella4").value =""               
+  document.getElementById("ella5").value =""            
+    document.getElementById("ella6").value =""           
+   document.getElementById("mainvid").style.display ="block";
+        setTimeout(() => { 
+     document.getElementById("mainvid").style.display ="none"   
+       currentInputIndex = 0;
+       
+        resumeTimer();
+ 
+     }, 1800);
+        
+         
+         
+          } else {
+     document.getElementById("ella3").value =""        
+  document.getElementById("ella4").value =""               
+  document.getElementById("ella5").value =""            
+    document.getElementById("ella6").value =""           
+         currentInputIndex = 0;
+          }
+        }
+      }
+    });
+  });
+ 
+
+
+  function refresh() {
+    if (window.AppInventor) {
+      window.AppInventor.setWebViewString("refresh");
+    } else {
+      console.log("AppInventor not available");
+    }
+  }
+
+const iframe2 = document.getElementById("myIframe2");
+          document.getElementById("please").addEventListener('click', () => {
+
+document.getElementById("transactionhisrec").style.display ="none"
+const iframe3 = document.getElementById("myIframe6");
+iframe3.style.visibility = "visible";
+ iframe3.style.opacity= "1";
+
+ 
+ localStorage.setItem('activeContainer', "please");
+ 
+let pos = 100; // start from left 100%
+  const interval = setInterval(() => {
+    pos -= 10; // slide speed
+    if (pos <= 0) {
+      pos = 0;
+      clearInterval(interval);
+    }
+    iframe3.style.left = pos + '%';
+  }, 1); // adjust speed (25ms)
+
+});
+ document.getElementById("please2").addEventListener('click', () => {
+
+document.getElementById("transactionhisrec").style.display ="none"
+const iframe3 = document.getElementById("myIframe6");
+
+iframe3.classList.add("show");
+ iframe3.style.visibility = "visible";
+ iframe3.style.opacity= "1";
+ localStorage.setItem('activeContainer', "please");
+ 
+let pos = 100; // start from left 100%
+  const interval = setInterval(() => {
+    pos -= 10; // slide speed
+    if (pos <= 0) {
+      pos = 0;
+      clearInterval(interval);
+    }
+    iframe3.style.left = pos + '%';
+  }, 1); // adjust speed (25ms)
+});
+     
+     document.getElementById("bankClick").addEventListener('click', () => {
+
+document.getElementById("flex3").style.display ="none"
+iframe2.classList.add("show");
+ 
+ localStorage.setItem('activeContainer', "transpage");
+ 
+let pos = 100; // start from left 100%
+  const interval = setInterval(() => {
+    pos -= 10; // slide speed
+    if (pos <= 0) {
+      pos = 0;
+      clearInterval(interval);
+    }
+    iframe2.style.left = pos + '%';
+  }, 1); // adjust speed (25ms)
+});
+
+  
+  // Listen for messages from the iframe
+    window.addEventListener("message", function(event) {
+      if (event.data === "bankIframe") {
+  
+     let pos = 0; // start from left 0%
+  const interval = setInterval(() => {
+    pos += 5; // slide out
+    if (pos >= 100) {
+      pos = 100;
+      clearInterval(interval);
+      
+    }
+    iframe2.style.left = pos + '%';
+  }, 1);
+  setTimeout(() => { 
+ document.getElementById("flex3").style.display ="block"        
+ iframe2.classList.remove("show");     
+ 
+     }, 200);
+      const iframe3 = document.getElementById("myIframe4");
+      iframe3.src = iframe3.src;
+  localStorage.setItem('activeContainer', "home");   
+      }
+    });
+    // Listen for messages from the iframe
+    window.addEventListener("message", function(event) {
+      if (event.data === "reloadedit") {
+ const iframe3 = document.getElementById("myIframe7");
+ iframe3.src ="index27.html"
+ 
+  }
+  });
+   // Listen for messages from the iframe
+    window.addEventListener("message", function(event) {
+      if (event.data === "hideIframe") {
+ 
+ const iframe2 = document.getElementById("myIframe2");
+   const iframe3 = document.getElementById("myIframe6");
+  
+  let pos = 0; // start from left 0%
+  const interval = setInterval(() => {
+    pos += 5; // slide out
+    if (pos >= 100) {
+      pos = 100;
+      clearInterval(interval);
+      iframe3.style.visibility = "hidden";
+ iframe3.style.opacity = "0";
+   }
+    iframe3.style.left = pos + '%';
+  }, 1);
+  setTimeout(() => {
+    iframe2.style.visibility = "visible";
+ iframe2.style.opacity = "1";   
+ }, 200);
+  }
+  });
+// Listen for messages from the iframe
+    window.addEventListener("message", function(event) {
+      if (event.data === "hideIframe2") {
+ 
+ const iframe2 = document.getElementById("transactionhisrec");
+   const iframe3 = document.getElementById("myIframe6");
+  
+  let pos = 0; // start from left 0%
+  const interval = setInterval(() => {
+    pos += 5; // slide out
+    if (pos >= 100) {
+      pos = 100;
+      clearInterval(interval);
+      iframe3.style.visibility = "hidden";
+ iframe3.style.opacity = "0";
+   }
+    iframe3.style.left = pos + '%';
+  }, 1);
+  setTimeout(() => {
+    
+ iframe2.style.display = "block";   
+ }, 200);
+  }
+  });
+ 
+ // Listen for messages from the iframe
+    window.addEventListener("message", function(event) {
+if (event.data === "savepic") {
+  saveToFirebase();
+
+document.getElementById("myIframe7").src ="index27.html"
+
+}
+});
+  // Listen for messages from the iframe
+    window.addEventListener("message", function(event) {
+      if (event.data === "myedit") {
+ const iframe2 = document.getElementById("myIframe2");
+   const iframe3 = document.getElementById("myIframe6");
+  
+  iframe2.style.visibility = "hidden";
+ iframe2.style.opacity = "0";
+  
+  
+  setTimeout(() => {
+    
+  iframe3.style.visibility = "visible";
+ iframe3.style.opacity = "1";   
+let pos = 100; // start from left 100%
+  const interval = setInterval(() => {
+    pos -= 10; // slide speed
+    if (pos <= 0) {
+      pos = 0;
+      clearInterval(interval);
+    }
+    iframe3.style.left = pos + '%';
+  }, 1); // adjust speed (25ms)
+      
+      }, 200);
+}
+});
+   // Listen for messages from the iframe
+    window.addEventListener("message", function(event) {
+      if (event.data === "resetIframe") {
+  
+     let pos = 0; // start from left 0%
+  const interval = setInterval(() => {
+    pos += 5; // slide out
+    if (pos >= 100) {
+      pos = 100;
+      clearInterval(interval);
+      
+    }
+    iframe2.style.left = pos + '%';
+  }, 1);
+  setTimeout(() => { 
+ document.getElementById("flex3").style.display ="block"        
+ iframe2.classList.remove("show");     
+ 
+     }, 200);
+      }
+    });
+      // Listen for messages from the iframe
+    window.addEventListener("message", function(event) {
+      if (event.data === "resetIframe") {
+  const iframe3 = document.getElementById("myIframe4");
+      iframe3.src = iframe3.src; 
+     
+      }
+    });
+    
+ function peace() { 
+const scrollContainer = document.getElementById("maintopcon");
+const pullLoader = document.getElementById("pullLoader");
+const pullImage = document.getElementById("pullImage");
+const loaderSpinner = document.getElementById("loaderSpinner");
+
+let startY = 0;
+let isPulling = false;
+let isLoading = false;
+let pullDistance = 0;
+
+const maxPull = 160;
+const releasePull = 90;
+
+scrollContainer.addEventListener("touchstart", (e) => {
+  if (isLoading) return;
+  startY = e.touches[0].pageY;
+  isPulling = false;
+});
+
+scrollContainer.addEventListener("touchmove", (e) => {
+  if (isLoading) return;
+
+  const moveY = e.touches[0].pageY;
+  const diffY = moveY - startY;
+
+  if (diffY > 0 && scrollContainer.scrollTop === 0) {
+    if (e.cancelable) e.preventDefault();
+    isPulling = true;
+
+    pullDistance = Math.min(diffY, maxPull);
+    pullLoader.style.transition = "none";
+    pullLoader.style.transform = `translate(-50%, ${pullDistance - 50}px)`;
+    pullImage.style.transform = `rotate(${pullDistance * 4}deg)`;
+  }
+}, { passive: false });
+
+scrollContainer.addEventListener("touchend", () => {
+  if (!isPulling || isLoading) return;
+
+  if (pullDistance < maxPull) {
+    pullLoader.style.transition = "transform 0.3s ease";
+    pullLoader.style.transform = "translate(-50%, -50px)";
+    pullImage.style.transform = "rotate(0deg)";
+    isPulling = false;
+    pullDistance = 0;
+    return;
+  }
+
+  pullLoader.style.transform = `translate(-50%, ${releasePull - 50}px)`;
+
+  setTimeout(() => {
+    pullImage.style.display = "none";
+    loaderSpinner.style.display = "block";
+    pullLoader.style.background = "white";
+    isLoading = true;
+
+    setTimeout(() => {
+      pullLoader.style.transform = "translate(-50%, -50px)";
+      loaderSpinner.style.display = "none";
+      pullImage.style.display = "block";
+      pullImage.style.transform = "rotate(0deg)";
+      pullLoader.style.background = "transparent";
+   document.getElementById("fineimg").style.marginLeft = "2px";
+      setTimeout(() => {
+        document.getElementById("fineimg").style.marginLeft = "-3px";
+     
+      }, 100);
+      
+      isLoading = false;
+    }, 1500);
+  }, 200);
+refresh();
+});
+
+}
+
+peace();
+function peace2 () { 
+const scrollContainer = document.getElementById("scroll-container2");
+const pullLoader = document.getElementById("pullLoader2");
+const pullImage = document.getElementById("pullImage2");
+const loaderSpinner = document.getElementById("loaderSpinner2");
+
+let startY = 0;
+let isPulling = false;
+let isLoading = false;
+let pullDistance = 0;
+
+const maxPull = 160;
+const releasePull = 90;
+
+scrollContainer.addEventListener("touchstart", (e) => {
+  if (isLoading) return;
+  startY = e.touches[0].pageY;
+  isPulling = false;
+});
+
+scrollContainer.addEventListener("touchmove", (e) => {
+  if (isLoading) return;
+
+  const moveY = e.touches[0].pageY;
+  const diffY = moveY - startY;
+
+  if (diffY > 0 && scrollContainer.scrollTop === 0) {
+    if (e.cancelable) e.preventDefault();
+    isPulling = true;
+
+    pullDistance = Math.min(diffY, maxPull);
+    pullLoader.style.transition = "none";
+    pullLoader.style.transform = `translate(-50%, ${pullDistance - 50}px)`;
+    pullImage.style.transform = `rotate(${pullDistance * 4}deg)`;
+  }
+}, { passive: false });
+
+scrollContainer.addEventListener("touchend", () => {
+  if (!isPulling || isLoading) return;
+
+  if (pullDistance < maxPull) {
+    pullLoader.style.transition = "transform 0.3s ease";
+    pullLoader.style.transform = "translate(-50%, -50px)";
+    pullImage.style.transform = "rotate(0deg)";
+    isPulling = false;
+    pullDistance = 0;
+    return;
+  }
+
+  pullLoader.style.transform = `translate(-50%, ${releasePull - 50}px)`;
+
+  setTimeout(() => {
+    pullImage.style.display = "none";
+    loaderSpinner.style.display = "block";
+    pullLoader.style.background = "white";
+    isLoading = true;
+
+    setTimeout(() => {
+      pullLoader.style.transform = "translate(-50%, -50px)";
+      loaderSpinner.style.display = "none";
+      pullImage.style.display = "block";
+      pullImage.style.transform = "rotate(0deg)";
+      pullLoader.style.background = "transparent";
+      isLoading = false;
+    }, 1500);
+  }, 200);
+});
+}
+
+peace2();
+ 
+ const track = document.getElementById('track');
+  const dots = document.querySelectorAll('.dot');
+  let currentIndex = 0;
+  const totalSlides = dots.length;
+
+  function updateSlidePosition() {
+    track.style.transform = `translateX(-${currentIndex * 100}%)`;
+    dots.forEach((dot, index) => {
+      dot.classList.toggle('active', index === currentIndex);
+    });
+  }
+
+  function nextSlide() {
+    currentIndex = (currentIndex + 1) % totalSlides;
+    updateSlidePosition();
+  }
+
+  // Auto-slide every 2 seconds
+  setInterval(nextSlide, 2800);
+
+  // Touch control
+  const slider = document.getElementById('slider');
+  let startX = 0;
+
+  slider.addEventListener('touchstart', e => {
+    startX = e.touches[0].clientX;
+  });
+
+  slider.addEventListener('touchend', e => {
+    let endX = e.changedTouches[0].clientX;
+    if (startX - endX > 50 && currentIndex < totalSlides - 1) {
+      currentIndex++;
+    } else if (endX - startX > 50 && currentIndex > 0) {
+      currentIndex--;
+    }
+    updateSlidePosition();
+  }); 
+ document.getElementById("noneClick").addEventListener('click', () => {
+document.getElementById("flex3").style.display ="none";
+document.getElementById("flex4").style.display ="block";
+
+const idme ="noneClick";
+   localStorage.setItem('activeContainer', idme);
+ });
+ document.getElementById("transClick").addEventListener('click', () => {
+
+
+
+document.getElementById("flex3").style.display ="none";
+document.getElementById("bank555").style.display ="none";
+document.getElementById("bank666").style.display ="none";
+
+document.getElementById("transactionhisrec").style.display ="block";
+
+
+const idme ="transClick";
+   localStorage.setItem('activeContainer', idme);
+
+ });
+ document.getElementById("closetrans").addEventListener('click', () => {
+document.getElementById("transactionhisrec").style.display ="none";
+document.getElementById("flex3").style.display ="block";
+ });
+ document.getElementById("noneClick2").addEventListener('click', () => {
+document.getElementById("flex3").style.display ="block";
+document.getElementById("flex4").style.display ="none";
+ }); document.getElementById("changeeye").addEventListener('click', () => {
+const fornum =
+document.getElementById("fornum");
+if (fornum.style.display === "none" || fornum.style.display === "") {
+      fornum.style.display = "block";
+document.getElementById("hiddenpic").style.display ="none"
+  document.getElementById("eyeopen").style.display ="block"
+    } else {
+      fornum.style.display = "none";
+document.getElementById("hiddenpic").style.display ="block"
+  document.getElementById("eyeopen").style.display ="none"
+    } 
+ });
+ 
+
+   function copy13Num() {
+  let text = document.getElementById("13num").textContent.replace(/\s+/g, ""); // Remove whitespace/newlines
+  let textarea = document.createElement("textarea");
+  textarea.value = text;
+  document.body.appendChild(textarea);
+  textarea.select();
+  document.execCommand("copy");
+  document.body.removeChild(textarea);
+  }
+function copy14Num() {
+  let text = document.getElementById("mixnum").textContent.replace(/\s+/g, ""); // Remove whitespace/newlines
+  let textarea = document.createElement("textarea");
+  textarea.value = text;
+  document.body.appendChild(textarea);
+  textarea.select();
+  document.execCommand("copy");
+  document.body.removeChild(textarea);
+  
+}
+function copy14Num2() {
+  let text = document.getElementById("mixnum2").textContent.replace(/\s+/g, ""); // Remove whitespace/newlines
+  let textarea = document.createElement("textarea");
+  textarea.value = text;
+  document.body.appendChild(textarea);
+  textarea.select();
+  document.execCommand("copy");
+  document.body.removeChild(textarea);
+  
+}
+function copyNum2() {
+  let text = document.getElementById("mixnu2").textContent.replace(/\s+/g, ""); // Remove whitespace/newlines
+  let textarea = document.createElement("textarea");
+  textarea.value = text;
+  document.body.appendChild(textarea);
+  textarea.select();
+  document.execCommand("copy");
+  document.body.removeChild(textarea);
+  
+}
+  function copy14Num72() {
+  let text = document.getElementById("mixnum72").textContent.replace(/\s+/g, ""); // Remove whitespace/newlines
+  let textarea = document.createElement("textarea");
+  textarea.value = text;
+  document.body.appendChild(textarea);
+  textarea.select();
+  document.execCommand("copy");
+  document.body.removeChild(textarea);
+  }
+  function copy14Num7() {
+  let text = document.getElementById("mixnum7").textContent.replace(/\s+/g, ""); // Remove whitespace/newlines
+  let textarea = document.createElement("textarea");
+  textarea.value = text;
+  document.body.appendChild(textarea);
+  textarea.select();
+  document.execCommand("copy");
+  document.body.removeChild(textarea);
+  }
+  
+  function copy14Num8() {
+  let text = document.getElementById("mixnum8").textContent.replace(/\s+/g, ""); // Remove whitespace/newlines
+  let textarea = document.createElement("textarea");
+  textarea.value = text;
+  document.body.appendChild(textarea);
+  textarea.select();
+  document.execCommand("copy");
+  document.body.removeChild(textarea);
+  }
+   
+
+ 
+  </script>
+</body>
+</html>  
